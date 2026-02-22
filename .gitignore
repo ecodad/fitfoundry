@@ -1,0 +1,8 @@
+# Personal profile — contains contact info, salary expectations, and active application details
+Jonathan_Hunt_job_search_profile.md
+
+# Job assessment results — contain full scraped job descriptions and personal scoring notes
+results/
+
+# Environment variables — contain API keys and personal paths
+.env
