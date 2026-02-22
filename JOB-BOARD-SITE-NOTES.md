@@ -14,6 +14,12 @@ Reference for the agent running the job board workflow. Read this file at the st
 | 4 | LinkedIn | https://www.linkedin.com/jobs/search/?keywords=...&location=Boston%2C+MA&f_TPR=r2592000&f_E=4%2C5&f_JT=F&sortBy=DD | Never | Requires login for full results |
 | 5 | TheEngine | https://engine.xyz/careers?job_functions=Operations | 2026-02-22 | All (filter by MA in post-processing) |
 | 6 | 80kHours | https://jobs.80000hours.org/?refinementList%5Btags_location_80k%5D%5B0%5D=Boston%20metro%20area&refinementList%5Btags_location_80k%5D%5B1%5D=Remote%2C%20USA | 2026-02-22 | Boston + Remote USA; full-time only |
+| 7 | Draper | https://draper.wd5.myworkdayjobs.com/Draper_Careers | 2026-02-22 | Cambridge MA; all categories; clearance barrier — see notes |
+| 8 | WorkOnClimate | https://workonclimate.org | Never | Newsletter/Slack only — not scrapable; see notes |
+| 9 | Wellfound | https://wellfound.com/jobs?role=operations&role=product-manager&industry=Climatetech&industry=ArtificialIntelligence&jobType=fulltime | Never | Bot-protected — Claude in Chrome with login required |
+| 10 | YCombinator | https://www.workatastartup.com/jobs?industry=Climatetech&industry=ArtificialIntelligence&jobType=fulltime&role=operations&role=product-manager | 2026-02-22 | Server-rendered; no login required; industry filter unreliable — see notes |
+| 11 | BEV-Jobs | https://bevjobs.breakthroughenergy.org/jobs | Never | Getro (collection 1533); 767 jobs / 92 companies; UI filters required |
+| 12 | BEF-Jobs | https://befjobs.breakthroughenergy.org/jobs | Never | Getro (collection 2567); 77 jobs; early-stage Fellows portfolio |
 
 For ClimateBase URLs, reconstruct from the base URL with the appropriate filter parameters (see notes below). The exact filtered URL from a prior run is recorded in the corresponding master list file.
 
@@ -349,6 +355,222 @@ fetch(`https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX}/quer
 **Individual job pages:** Each hit has `url_external` pointing directly to the employer's ATS (Greenhouse, Ashby, Workday, Bamboo, etc.). Navigate directly — no side panel needed.
 
 **Note on duplicate Active Site listings:** Active Site (panoplialabs) posted the same "Head of Operations" role twice with different objectIDs but different URLs (one Ashby, one Google Doc). Deduplicate by title + company.
+
+---
+
+### 7. Draper Laboratory (`draper.wd5.myworkdayjobs.com`)
+
+**Site type:** Workday. Standard Workday Careers board. No bot detection.
+
+**Total jobs:** 150 (as of 2026-02-22). Predominantly Cambridge, MA with outliers (Odon IN, Clearfield UT, St. Petersburg FL, Huntsville AL, Reston VA, Houston TX).
+
+**Job categories (2026-02-22):** Engineering (110), Miscellaneous (20), Security & IA (7), Finance (5), Facilities (2), R&D & Technicians (2), Property & Supply Chain (1), HR (1), Operations (1), Contracts (1).
+
+**Workday CXS API (undocumented but reliable):**
+```javascript
+// Fetches all jobs — paginate in steps of 20 (limit:200 returns HTTP 400)
+// Important: returnFacets:true is required — omitting it returns HTTP 400
+// Important: only page 1 returns total; subsequent pages return total:0 — cache total from first call
+
+async function fetchAllDraper() {
+  const url = 'https://draper.wd5.myworkdayjobs.com/wday/cxs/draper/Draper_Careers/jobs';
+  const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+  const limit = 20;
+  const first = await fetch(url, { method: 'POST', headers,
+    body: JSON.stringify({ limit, offset: 0, searchText: '', appliedFacets: {}, returnFacets: true })
+  }).then(r => r.json());
+  const total = first.total;
+  let all = first.jobPostings || [];
+  for (let offset = limit; offset < total; offset += limit) {
+    const d = await fetch(url, { method: 'POST', headers,
+      body: JSON.stringify({ limit, offset, searchText: '', appliedFacets: {}, returnFacets: true })
+    }).then(r => r.json());
+    all = all.concat(d.jobPostings || []);
+  }
+  return { total, fetched: all.length, jobs: all };
+}
+window._draperDone = false;
+fetchAllDraper().then(r => { window._draperResult = r; window._draperDone = true; });
+```
+
+**Response fields per job:**
+- `title` — job title
+- `externalPath` — relative path, e.g. `/job/Cambridge-MA/Hardware-Analog-Electronics-Design-Engineer_JR001146`
+- `locationsText` — e.g. "Cambridge, MA" or "2 Locations"
+- `postedOn` — relative string, e.g. "Posted 3 Days Ago"
+- `bulletFields[0]` — req ID, e.g. "JR001146"
+
+**Full job URL pattern:** `https://draper.wd5.myworkdayjobs.com/en-US/Draper_Careers{externalPath}`
+
+**⚠️ Clearance barrier:** All management-tier roles (Group Leader, Supervisor, Manager, Director) require an Active US Government Security Clearance (Secret or higher). This is a structural pattern across the entire Draper board — not role-specific. IC engineering roles may not all require clearance, but none of those are relevant to Jonathan. **Do not repeat this run unless Jonathan has obtained or is actively pursuing a clearance.**
+
+**Jonathan's existing application:** Sensor Development Program Manager (not in current 150-job listing — likely closed or filled). Draper is already tracked in his active applications list.
+
+**Pre-screening for Jonathan:** With the clearance barrier, management roles (Group Leader, Supervisor, Director, Manager) should be skipped unless Jonathan's clearance status changes. No PM-titled roles were present in the 2026-02-22 run.
+
+**Recommended cadence:** Quarterly check for new PM-titled openings, or when Jonathan has a clearance.
+
+---
+
+### 8. Work on Climate (`workonclimate.org`)
+
+**Site type:** Community platform — no public job board.
+
+Work on Climate is a Slack community (~35,000 members) with jobs shared via:
+1. The `#job-board` Slack channel (members post directly, high volume)
+2. A monthly newsletter (`mailchi.mp/workonclimate.org/website-newsletter-signup`)
+
+**There is no scrapable job listing page.** The `/jobs` URL returns a 404.
+
+**Access method:** Jonathan should join the Slack workspace (`bit.ly/joinWoCl`) and subscribe to the newsletter. Jobs are not automatable — monitor manually.
+
+**Signal quality:** High for climate ops/PM roles. Community skews senior, mission-driven. Lower engineering-to-ops ratio than Climatebase.
+
+**Recommended cadence:** Monitor Slack `#job-board` weekly; newsletter arrives monthly.
+
+---
+
+### 9. Wellfound / AngelList Talent (`wellfound.com`)
+
+**Site type:** React SPA — **bot-protected** (Cloudflare slider CAPTCHA on direct navigation).
+
+**Cannot be scraped with Puppeteer from the VM.** Attempting to navigate directly triggers a human verification slider that cannot be bypassed.
+
+**Access method:** Use Claude in Chrome (browser extension) with Jonathan's existing Wellfound login session. The CAPTCHA does not appear for authenticated browser sessions.
+
+**URL filter parameters (all apply server-side, combine freely):**
+```
+https://wellfound.com/jobs
+  ?role=operations
+  &role=product-manager
+  &industry=Climatetech
+  &industry=ArtificialIntelligence
+  &jobType=fulltime
+  &remote=only          # omit for all locations
+```
+
+**Known valid `industry` values:** `Climatetech`, `ArtificialIntelligence`, `Robotics`, `CleanEnergy`, `B2B`, `SaaS`
+
+**Known valid `role` values:** `operations`, `product-manager`, `software-engineer`, `recruiting`, `marketing`
+
+**Card selector (once logged in and page loads):**
+```javascript
+const cards = Array.from(document.querySelectorAll('[class*="styles_component"]')).filter(el => el.querySelector('h2'));
+```
+(Class names are hashed and may change — identify by structure: each card has h2 for title, company name, location, and salary.)
+
+**Login requirement:** Full results require login. Anonymous access shows partial listings.
+
+**Recommended cadence:** Monthly, via Claude in Chrome.
+
+---
+
+### 10. Y Combinator — Work at a Startup (`workatastartup.com`)
+
+**Site type:** Server-rendered (Next.js). No bot detection, no login required. URL params apply server-side.
+
+**Recommended URL for Jonathan:**
+```
+https://www.workatastartup.com/jobs?industry=Climatetech&industry=ArtificialIntelligence&jobType=fulltime&role=operations&role=product-manager
+```
+
+**URL filter parameters:**
+- `industry` (multi-value): `Climatetech`, `ArtificialIntelligence`, `Robotics`, `Fintech`, `Healthcare`
+- `role` (multi-value): `operations`, `product-manager`, `software-engineer`, `science`, `recruiting`
+- `jobType`: `fulltime`, `parttime`, `internship`
+- `remote`: `only` (remote-only), omit for all
+- `location`: **no effect** — does not filter results. Post-process by location text in cards.
+
+**Card selector:** `.jobs-list > div` (each `div` is one company+job block)
+
+**Field extraction:**
+```javascript
+const items = Array.from(document.querySelectorAll('.jobs-list > div'));
+const jobs = items.map(item => ({
+  company:  item.querySelector('.font-bold')?.textContent?.trim(),
+  batch:    item.querySelector('.text-gray-600')?.textContent?.trim(),  // e.g. "AI-native insurance brokerage"
+  jobName:  item.querySelector('[class*="job-name"]')?.textContent?.trim(),
+  jobType:  item.querySelector('p.job-details span:first-child')?.textContent?.trim(),
+  location: item.querySelector('p.job-details span:last-child')?.textContent?.trim(),
+  jobHref:  item.querySelector('a[href*="/jobs/"]')?.href,
+  jobId:    item.querySelector('a[href*="/jobs/"]')?.getAttribute('data-jobid')
+}));
+```
+
+**Location post-filtering:** The `location` field extracted above is free-text (e.g., "San Francisco", "Remote", "Boston, MA"). Filter for `Remote` or `Boston` in post-processing.
+
+**Individual job pages:** Navigate to `https://www.ycombinator.com/companies/{slug}/jobs/{jobid}-{title-slug}`. Full JD available without login.
+
+**Total results:** Typically 20–40 for Operations + Climatetech + AI filters combined. No pagination needed.
+
+**⚠️ Industry filter finding (2026-02-22):** The `industry=Climatetech` and `industry=ArtificialIntelligence` URL params do not reliably filter results. The 23 Operations+PM results were identical with or without either industry filter — all results were AI/fintech/SaaS companies with no climate relevance. Zero climate-specific Operations or PM roles were open across the YC portfolio on this date. The board is useful as an AI startup discovery tool, not a climate board. **Do not expect Climatetech filter to surface true climate companies.**
+
+**Board characteristics:**
+- All companies are YC-backed (vetted, funded). High signal for early-stage AI/tech startups.
+- Batch tag (e.g., W25, S24) indicates recency — F/W/S + year.
+- Many listings are "Founding" roles — small team, broad scope, high equity.
+- Skews heavily SF; most roles are SF in-person. Few remote or Boston roles.
+- Low climate signal for Ops/PM roles — use Climatebase, The Engine, BEV/BEF for climate.
+
+**Recommended cadence:** Monthly. Useful for AI-adjacent startup roles; low value for climate.
+
+---
+
+### 11 & 12. Breakthrough Energy — BEV Jobs & BEF Jobs
+
+Two Getro-powered job boards for Breakthrough Energy's portfolio:
+
+| # | Label | URL | Collection ID | Total Jobs | Companies |
+|---|-------|-----|---------------|------------|-----------|
+| 11 | BEV-Jobs | https://bevjobs.breakthroughenergy.org/jobs | 1533 | ~767 | ~92 |
+| 12 | BEF-Jobs | https://befjobs.breakthroughenergy.org/jobs | 2567 | ~77 | ~30 |
+
+**BEV** = Breakthrough Energy Ventures (VC portfolio: CFS, Electric Hydrogen, Fervo, Antora, etc.)
+**BEF** = Breakthrough Energy Fellows (early-stage deep-tech startups by BEF alumni). Smaller, higher signal for very early-stage roles.
+
+**Site type:** Getro Next.js SPA — same platform as The Engine but different API authentication model.
+
+**Key difference from The Engine:** URL query params (`job_functions=Operations`, etc.) cause **HTTP 500 errors** on these boards. Filters must be applied via UI interaction. The Getro API (`api.getro.com/api/v2/collections/{id}/jobs`) requires server-side authentication not available client-side.
+
+**SSR embedded data (first 20 jobs, unfiltered):**
+```javascript
+const nd = JSON.parse(document.getElementById('__NEXT_DATA__').textContent);
+const jobs = nd.props.pageProps.initialState.jobs;
+// jobs.total = total job count; jobs.found = array of first 20 jobs
+const firstJob = jobs.found[0];
+// Fields: id, title, organization.name, locations[], workMode, url, seniority, createdAt, slug
+```
+
+**Card selector (after UI filter applied):** `[data-testid="job-list-item"]`
+
+**Field extraction from DOM:**
+```javascript
+const cards = Array.from(document.querySelectorAll('[data-testid="job-list-item"]'));
+const jobs = cards.map(c => ({
+  title:    c.querySelector('[data-testid="job-title-link"]')?.textContent?.trim(),
+  url:      c.querySelector('[data-testid="job-title-link"]')?.href,
+  text:     c.innerText  // parse company name, location, seniority from text
+}));
+```
+
+**Applying UI filters:**
+```javascript
+// 1. Click "Job function" filter (first filter option)
+document.querySelector('[data-testid="filter-option-item-0"]').click();
+// 2. Wait for dropdown, then find and click "Operations" checkbox
+// 3. Repeat for "Product"
+// 4. Wait for results to reload, then extract cards
+```
+
+**Available job function filter values (BEV):** Operations, Software Engineering, IT, Other Engineering, Sales & Business Development, Design, Accounting & Finance, People & HR, Quality Assurance, Product, Marketing & Communications, Customer Service, Data Science, Legal, Administration
+
+**Board characteristics:**
+- BEV: largest climate VC portfolio in the world. Companies include CFS, Form Energy, Electric Hydrogen, Fervo Energy, Antora, Stoke Space, Quantum SI. Heavy on deep-tech hardware.
+- BEF: smaller, earlier-stage. Very high climate-tech signal. 77 jobs total makes it manageable without filtering.
+- Both boards skew toward engineering and science roles. Operations/PM roles are a minority but high quality.
+- For BEF: omit filters entirely — 77 jobs is small enough to review all titles in one pass.
+
+**Recommended cadence:** Monthly. Run BEF unfiltered; run BEV with Operations + Product filter via UI.
 
 ---
 
