@@ -11,7 +11,7 @@ Reference for the agent running the job board workflow. Read this file at the st
 | 1 | ClimateBase-Remote | See workflow variables | 2026-02-21 | Remote only |
 | 2 | ClimateBase-In-Person | See workflow variables | 2026-02-22 | Hybrid + In-person |
 | 3 | GreentownLabs | https://greentownlabs.com/careers/?type=all&location=boston#job-type | 2026-02-22 | All (no reliable filter) |
-| 4 | LinkedIn | https://www.linkedin.com/jobs/search/?keywords=...&location=Boston%2C+MA&f_TPR=r2592000&f_E=4%2C5&f_JT=F&sortBy=DD | Never | Requires login for full results |
+| 4 | LinkedIn | https://www.linkedin.com/jobs/search/?keywords=technical+program+manager&location=Boston%2C+MA&f_TPR=r2592000&f_E=4%2C5&f_JT=F&sortBy=DD | 2026-02-23 | Claude in Chrome + login required; JS injection blocked — use read_page |
 | 5 | TheEngine | https://engine.xyz/careers?job_functions=Operations | 2026-02-22 | All (filter by MA in post-processing) |
 | 6 | 80kHours | https://jobs.80000hours.org/?refinementList%5Btags_location_80k%5D%5B0%5D=Boston%20metro%20area&refinementList%5Btags_location_80k%5D%5B1%5D=Remote%2C%20USA | 2026-02-22 | Boston + Remote USA; full-time only |
 | 7 | Draper | https://draper.wd5.myworkdayjobs.com/Draper_Careers | 2026-02-22 | Cambridge MA; all categories; clearance barrier — see notes |
@@ -22,6 +22,57 @@ Reference for the agent running the job board workflow. Read this file at the st
 | 12 | BEF-Jobs | https://befjobs.breakthroughenergy.org/jobs | Never | Getro (collection 2567); 77 jobs; early-stage Fellows portfolio |
 
 For ClimateBase URLs, reconstruct from the base URL with the appropriate filter parameters (see notes below). The exact filtered URL from a prior run is recorded in the corresponding master list file.
+
+---
+
+## Quick Reference
+
+### Candidate Profile (Jonathan Hunt)
+- **Location:** Boston area; open to remote (US)
+- **Background:** 27 years operations, program/project management, technical program management (MIT IS&T)
+- **Target sectors:** Climate tech, AI/ML applied to real-world problems
+- **Goal:** Use AI to tackle climate change
+- **Seniority:** Senior IC to Director level
+- **Not a fit:** Clearance-required roles, pure software engineering, early-career roles, roles requiring deep specialty he doesn't have
+- **Full profile:** `Jonathan_Hunt_job_search_profile.md`
+
+### Scoring Calibration
+| Score | Meaning | Action |
+|---|---|---|
+| 7–8 | Strong fit — climate + AI + ops/PM alignment, Boston/remote, good experience match | Create individual file |
+| 6 | Partial fit — good role but one significant gap (location, sector, experience) | Create individual file |
+| 5 | Partial fit — multiple gaps or weak alignment | Master list only |
+| 4 | Marginal — capture in master list only | Master list only |
+| ≤ 3 | Poor fit | Skip |
+
+### Credentials / .env
+Only Algolia credentials are required (for 80k Hours board). All other boards are public or browser-login-based.
+```
+ALGOLIA_APP_ID=W6KM1UDIB3
+ALGOLIA_API_KEY=d1d7f2c8696e7b36837d5ed337c4a319
+ALGOLIA_INDEX=jobs_prod
+```
+If credentials have rotated, retrieve current values from browser devtools (Network tab) while on the 80k Hours board.
+
+### Scraping Method by Board
+| Board | Method | Auth needed |
+|---|---|---|
+| Climatebase | Direct REST API (Puppeteer fetch) | None |
+| Greentown Labs | Static HTML scrape (Puppeteer JS) | None |
+| The Engine | Getro; URL params work | None |
+| 80k Hours | Algolia API (Puppeteer fetch) | Creds in `.env` |
+| Draper | Workday undocumented CXS POST API | None |
+| YC (workatastartup) | Server-rendered Next.js scrape | None |
+| BEV / BEF | Getro; UI filter clicks required (URL params → HTTP 500) | None |
+| LinkedIn | Claude in Chrome + read_page (JS blocked) | LinkedIn login |
+| Wellfound | Claude in Chrome + read_page | Wellfound login + CAPTCHA |
+
+### Filter Reliability Findings
+- **YC `industry` filter is broken** — `industry=Climatetech` returns identical results to no filter. Use YC only for AI startup discovery, not climate signal.
+- **BEV/BEF URL params → HTTP 500** — must apply Operations/Product filters via UI clicks.
+- **The Engine URL params work** — `?job_functions=Operations` is reliable.
+- **LinkedIn keyword searches overlap heavily** — LinkedIn matches on body text. "hardware program manager", "chief of staff", etc. return same/noise results as "technical program manager". Run one keyword only.
+- **Draper clearance barrier** — all management-tier roles require active US Government security clearance. Low-yield board for Jonathan until clearance status changes; check quarterly at most.
 
 ---
 
@@ -146,14 +197,20 @@ outer: while (node) {
 
 **Site type:** React SPA. No Cloudflare blocking — URL parameters work directly, no need to navigate from the homepage first.
 
-**⚠️ Login required for full results.** Anonymous access caps at ~66 cards per search query (190 exist for "technical program manager" + Boston + past 30 days). Login removes this cap. Recommend using Claude in Chrome with your existing LinkedIn session for full coverage.
+**⚠️ Login required for full results.** Anonymous access caps at ~66 cards per search query. Login removes this cap. Use Claude in Chrome with your existing LinkedIn session for full coverage.
 
-**Without login — workaround:** Run multiple narrow keyword searches to maximize coverage, then deduplicate by job ID:
-- `technical program manager`
-- `R&D program manager`
-- `hardware program manager`
-- `operations program manager`
-- `research program manager`
+**⚠️ JavaScript injection is blocked on LinkedIn.** `javascript_tool` fails with "Cannot access a chrome-extension:// URL of different extension" caused by LinkedIn's reCAPTCHA iframes. This is a persistent Chrome security restriction — do not attempt JS injection. Use `read_page` (accessibility tree) for all card and page extraction.
+
+**Extraction method (Claude in Chrome only):**
+Use `read_page(filter="interactive", depth=2)` to get job card links and titles from the accessibility tree. Parse job IDs from href attributes in the form `/jobs/view/[slug]-[JOBID]/`.
+
+**Virtual DOM / lazy rendering — critical:** Cards only appear in the accessibility tree when scrolled into viewport. Each 25-card page requires ~3 scroll+re-read cycles to load all cards:
+1. Call `read_page` to capture initially visible cards
+2. Scroll the left panel 10 ticks at coordinate ~[350, 600]
+3. Call `read_page` again to pick up newly rendered cards
+4. Repeat until no new cards appear
+
+`get_page_text` returns the active right-pane job detail only — not the card list. Use it for reading individual job descriptions, not for card extraction.
 
 **URL filter parameters (all work via direct navigation):**
 ```
@@ -164,50 +221,49 @@ f_E=4%2C5          # Experience: 4=Mid-Senior, 5=Director
 f_JT=F             # Job type: F=Full-time
 f_WT=2             # Workplace: 1=Onsite, 2=Remote, 3=Hybrid (omit for all)
 sortBy=DD          # Sort by date descending
+start=N            # Pagination offset (0, 25, 50, …)
 ```
 
-Example full URL:
+Recommended full URL for Jonathan:
 `https://www.linkedin.com/jobs/search/?keywords=technical+program+manager&location=Boston%2C+MA&f_TPR=r2592000&f_E=4%2C5&f_JT=F&sortBy=DD`
 
-**Login modal dismissal:**
+**Pagination:** Navigate directly using the `start=` parameter (`start=0`, `start=25`, `start=50`, etc.). Pages 1–5 (125 cards) cover the freshest postings adequately — signal drops significantly after page 5.
+
+**Keyword search strategy — use one keyword only:**
+LinkedIn matches on job body text, not title. "hardware program manager" and "chief of staff" return the same results as "technical program manager" with additional noise (restaurant GMs, airport supervisors, etc.). Run only `technical program manager`. Multiple keyword searches produce heavily overlapping sets with minimal additional signal.
+
+**Similar jobs panels:** When visiting individual job pages, a "More jobs" / "Similar jobs" sidebar appears with high-quality leads not found in the main search feed. This surfaced Boston Dynamics, WHOOP, Motional, and Anduril in the 2026-02-23 run. Always scan this panel when reviewing individual postings.
+
+**Individual job pages:** Navigate directly to `/jobs/view/[slug]-[JOBID]`. Use `get_page_text` to read the full JD (returns right-pane article text). Structured fields (seniority, employment type, job function, industries) are visible without login.
+
+**No sector/industry filter on search results.** LinkedIn has no climate/sustainability filter — all industries appear. Pre-screen aggressively by title and check the "Industries" field on individual postings to skip healthcare staffing, retail, finance, etc.
+
+**Login modal dismissal (if using JS):**
 ```javascript
 document.querySelectorAll('[class*="modal"], [role="dialog"]').forEach(m => m.style.display = 'none');
 ```
-The `button.modal__dismiss` selector also works but may need retry. Hiding via CSS is more reliable.
+Note: JS execution is blocked on LinkedIn — use `find` tool to locate dismiss buttons and click via `computer` action instead.
 
-**Card selector:** `.job-search-card` (also `.base-card`)
+**Notification popups:** LinkedIn shows "Get the app" and notification banners. Use `find("dismiss button")` and click via the `computer` tool to close them.
 
-**Card field extraction:**
+**Card selector (for reference if JS ever works):** `.job-search-card` (also `.base-card`)
+
+**Card field extraction (JS reference only — currently blocked):**
 ```javascript
 const cards = Array.from(document.querySelectorAll('.job-search-card'));
 cards.map(card => ({
   title: card.querySelector('h3')?.textContent?.trim(),
   company: card.querySelector('h4')?.textContent?.trim(),
   location: card.querySelector('.job-search-card__location')?.textContent?.trim(),
-  posted: card.querySelector('time')?.getAttribute('datetime'),  // ISO format
-  postedLabel: card.querySelector('time')?.textContent?.trim(),  // e.g. "2 weeks ago"
+  posted: card.querySelector('time')?.getAttribute('datetime'),
   link: card.querySelector('a.base-card__full-link')?.href,
-  jobId: card.querySelector('a')?.href?.match(/view\/[^?]+?-(\d+)\?/)?.[1]
+  jobId: card.querySelector('a')?.href?.match(/view\/[^?]+?-(\d+)\/?/)?.[1]
 }));
 ```
 
-**Individual job pages:** Accessible without login at `/jobs/view/[slug]-[id]`. Strip tracking params from links. Full JD requires clicking "Show more":
-```javascript
-document.querySelector('.show-more-less-html__button--more')?.click();
-const jd = document.querySelector('.show-more-less-html__markup')?.innerText?.trim();
-```
+**Without login — workaround (lower quality):** Run multiple narrow keyword searches and deduplicate by job ID. Stops loading at ~66 cards per query regardless.
 
-**Structured fields available on job pages (no login required):**
-- Seniority level (e.g., "Mid-Senior level")
-- Employment type (e.g., "Full-time")
-- Job function (e.g., "Engineering")
-- Industries (e.g., "IT Services and IT Consulting") — useful for filtering non-target sectors
-
-**No sector/industry filter on search results.** Unlike Climatebase, LinkedIn has no climate/sustainability filter. All industries appear. Use title-based keyword pre-screening aggressively and check the "Industries" field on individual postings to skip obviously irrelevant sectors (healthcare staffing, retail, finance, etc.).
-
-**Pagination/lazy loading:** Cards load as you scroll. Without login, scrolling stops loading after ~66 cards. With login, the full result set loads on scroll.
-
-**Notification popups:** LinkedIn shows "Get the app" and "Know when new jobs open up" banners — dismiss by hiding `[class*="cta-modal"]` elements.
+**Recommended cadence:** Monthly. Run `technical program manager` search, pages 1–5 only.
 
 ---
 
