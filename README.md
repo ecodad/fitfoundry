@@ -1,79 +1,59 @@
-# Job Search Workflow
+# FitFoundry — AI-Assisted Job Search Workflow
 
-An AI-assisted job board scraping and evaluation system designed to run inside [Cowork](https://www.anthropic.com) (Anthropic's agentic desktop tool). The workflow automates the repetitive parts of a job search — scraping listings, filtering by location and role type, assessing each posting against a personal profile, and generating structured output files for follow-up.
+An AI-assisted job board scraping and evaluation system designed to run inside [Cowork](https://www.anthropic.com) (Anthropic's agentic desktop tool). The workflow automates the repetitive parts of a job search — scraping listings, filtering by location and role type, assessing each posting against a personal profile, verifying postings are real, and generating structured output files for follow-up.
+
+For setup instructions, see [SETUP.md](SETUP.md).
 
 ---
 
 ## What It Does
 
-1. **Scrapes job boards** using Puppeteer-based browser automation, handling lazy-loaded React apps, static pages, and direct API queries where available.
+1. **Scrapes job boards** using Puppeteer-based browser automation and, for login-gated boards, the Claude in Chrome extension. Handles lazy-loaded React apps, static pages, and direct API queries where available.
 2. **Filters listings** by location, workplace type (remote / hybrid / in-person), and employment type (full-time only).
-3. **Pre-screens candidates** using configurable title keyword include/exclude lists to reduce large result sets before visiting individual postings.
+3. **Pre-screens candidates** using title keyword include/exclude lists to reduce large result sets before visiting individual postings.
 4. **Evaluates each job** against your personal profile, scoring interest and fit on a 1–10 scale with written rationale.
-5. **Generates structured output** — a master list markdown table per run, and one individual markdown file per scored job containing the full job description, a fit summary, and a direct application link.
-6. **Logs lessons learned** per board so scraping approaches improve over time without re-discovery.
-
----
-
-## Repository Structure
-
-```
-job-search/
-├── .env.example                  ← safe config template — copy to .env and fill in values
-├── .gitignore                    ← excludes .env, MY-PROFILE.md, and results/
-├── MY-PROFILE.md                 ← your personal profile template (not committed)
-├── JOB-BOARD-WORKFLOW.md        ← the workflow prompt to paste into Cowork each session
-├── JOB-BOARD-SITE-NOTES.md     ← per-site scraping reference, updated after each run
-├── master_job_listing_sites.md  ← optional: notes on additional boards under evaluation
-└── results/                     ← generated output files (not committed)
-    ├── YYYY-MM-DD-BoardName.md  ← master list + session summary for each run
-    └── Company_Role_YYYY-MM-DD.md  ← individual file for each scored job
-```
-
----
-
-## Getting Started
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/ecodad/fit_foundry.git
-cd fit_foundry
-```
-
-### 2. Configure your environment
-
-```bash
-cp .env.example .env
-```
-
-Open `.env` and set:
-
-- `PROFILE_PATH` — path to your profile file (default: `./MY-PROFILE.md`)
-- `OUTPUT_FOLDER` — where results are written (default: `./results/`)
-- `ALGOLIA_APP_ID` / `ALGOLIA_API_KEY` / `ALGOLIA_INDEX` — credentials for the 80,000 Hours board (see note below)
-
-### 3. Fill in your profile
-
-Open `MY-PROFILE.md` and complete every section. The more specific you are, the more accurately the agent can assess job fit. Your profile is never committed to the repository.
-
-### 4. Run the workflow
-
-Open [Cowork](https://www.anthropic.com) and paste the full contents of `JOB-BOARD-WORKFLOW.md` into a new session. The agent will guide you through board selection and run the full workflow interactively.
+5. **Verifies postings** against the company's own career site to flag potential ghost jobs before you invest time applying.
+6. **Generates structured output** — a master list markdown table per run, and one individual markdown file per scored job containing the full job description, fit summary, ghost job status, and direct application links.
+7. **Logs lessons learned** per board so scraping approaches improve over time without re-discovery.
 
 ---
 
 ## Supported Job Boards
 
-| Board | URL | Notes |
-|-------|-----|-------|
-| Climatebase | climatebase.org | React SPA; requires scrollable container approach |
-| Greentown Labs | greentownlabs.com/careers | Static WordPress; mixes Boston and Houston members |
-| LinkedIn | linkedin.com/jobs | Login recommended for full results; capped at ~66 cards without |
-| The Engine | engine.xyz/careers | MIT Tough Tech portfolio; static Getro platform |
-| 80,000 Hours | jobs.80000hours.org | Algolia API; high curation, low volume |
+| # | Board | URL | Notes |
+|---|-------|-----|-------|
+| 1 | Climatebase (Remote) | climatebase.org | React SPA; Algolia-backed; scrollable container approach |
+| 2 | Climatebase (In-Person) | climatebase.org | Same board, Hybrid + In-person filter via UI |
+| 3 | Greentown Labs | greentownlabs.com/careers | Static; mixes Boston and Houston members; no date filter |
+| 4 | LinkedIn | linkedin.com/jobs | **Requires Claude in Chrome + login.** JS injection blocked — uses accessibility tree. Pages 1–5 of TPM search adequate. |
+| 5 | The Engine | engine.xyz/careers | MIT Tough Tech portfolio; Getro platform; URL params work |
+| 6 | 80,000 Hours | jobs.80000hours.org | Algolia API; high curation, low volume; creds in `.env` |
+| 7 | Draper Laboratory | draper.wd5.myworkdayjobs.com | Workday CXS API; most roles require security clearance |
+| 8 | Work on Climate | workonclimate.org | Slack community + newsletter only — not scrapable |
+| 9 | Wellfound | wellfound.com/jobs | **Requires Claude in Chrome + login.** Cloudflare CAPTCHA blocks Puppeteer. |
+| 10 | Y Combinator | workatastartup.com | Server-rendered; no login required; industry filter unreliable |
+| 11 | BEV Jobs | bevjobs.breakthroughenergy.org | Getro; ~767 jobs; UI filters required (URL params → HTTP 500) |
+| 12 | BEF Jobs | befjobs.breakthroughenergy.org | Getro; ~77 jobs; small enough to review unfiltered |
 
-Detailed scraping notes, selector patterns, filter quirks, and known ATS compatibility issues for each board are documented in `JOB-BOARD-SITE-NOTES.md`.
+Detailed scraping notes, selector patterns, filter quirks, and known ATS compatibility issues for each board are in `JOB-BOARD-SITE-NOTES.md`.
+
+---
+
+## Ghost Job Check
+
+After scoring jobs and creating individual files, the agent attempts to verify each posting on the company's own career site — not the aggregator board it was sourced from. This catches ghost jobs: postings left up on job boards after a role has been filled or quietly cancelled.
+
+**How it works:** The agent navigates to the company's ATS (Workday, Lever, Greenhouse, Ashby, etc.) and searches for the exact job title. Most companies' career sites point directly to their ATS, and many ATS platforms expose a public search API that can be queried without authentication.
+
+**Each individual job file is updated with one of:**
+
+| Status | Meaning |
+|--------|---------|
+| ✅ Confirmed live on [ATS] (date) | Posting found on company career site — real job |
+| ⚠️ Possible Ghost Job — posting not found on company career site (date) | Not found; may be filled, cancelled, or never posted directly |
+| ❓ Unverified — career site inaccessible (date) | Site blocked or CAPTCHA prevented verification |
+
+Jobs that cannot be confirmed are kept — the posting may be legitimate but listed only on the aggregator, or the career site may have been temporarily inaccessible. The status is advisory.
 
 ---
 
@@ -111,7 +91,9 @@ Generated for each posting where both interest and fit are positive:
 
 **Location:** ... | **Workplace:** ...
 
-**Apply:** [link]
+**Apply:** [link to job board listing]
+**Company career site:** [direct link to posting on company ATS]
+**Ghost job check:** ✅ / ⚠️ / ❓ [status and date]
 
 ## Why This Role
 ...
@@ -123,61 +105,35 @@ Generated for each posting where both interest and fit are positive:
 ...
 ```
 
-Scores follow this scale:
+### Scoring scale
 
-| Score | Meaning |
-|-------|---------|
-| 10 | Dream job — aligns perfectly with stated ideal role |
-| 7–9 | Strong interest, good fit, worth pursuing |
-| 4–6 | Acceptable role, reasonable fit, would consider |
-| 1–3 | Would do it to get by, limited enthusiasm |
-| Skip | Low interest OR poor fit — no file created |
-
----
-
-## Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PROFILE_PATH` | Path to your personal profile file | `./MY-PROFILE.md` |
-| `OUTPUT_FOLDER` | Directory for generated result files | `./results/` |
-| `ALGOLIA_APP_ID` | 80k Hours Algolia application ID | *(required for board 6)* |
-| `ALGOLIA_API_KEY` | 80k Hours Algolia read-only API key | *(required for board 6)* |
-| `ALGOLIA_INDEX` | Algolia index name | `jobs_prod` |
-
-Algolia credentials can be retrieved from browser devtools (Network tab) while on the 80,000 Hours job board. These are read-only public search keys. Rotate your `.env` values if the board's credentials change.
-
----
-
-## What Is and Is Not Committed
-
-| File / Folder | Committed | Reason |
-|---------------|-----------|--------|
-| `.env.example` | ✅ Yes | Safe template with no real values |
-| `.env` | ❌ No | Contains API keys and personal paths |
-| `MY-PROFILE.md` | ❌ No | Contains personal contact info and career details |
-| `results/` | ❌ No | Contains scraped job descriptions and personal assessments |
-| `JOB-BOARD-WORKFLOW.md` | ✅ Yes | Generic workflow prompt |
-| `JOB-BOARD-SITE-NOTES.md` | ✅ Yes | Technical scraping reference |
+| Score | Meaning | Action |
+|-------|---------|--------|
+| 9–10 | Dream job — near-perfect alignment | Individual file |
+| 7–8 | Strong fit — worth pursuing | Individual file |
+| 6 | Partial fit — one significant gap | Individual file |
+| 5 | Partial fit — multiple gaps | Master list only |
+| 4 | Marginal | Master list only |
+| ≤ 3 | Poor fit | Skip |
 
 ---
 
 ## Adding a New Board
 
 1. Run the workflow and select "new board" at the site selection step.
-2. Document the scraping approach, card selectors, filter quirks, and any blocked ATS systems.
-3. After the run, add a new section to `JOB-BOARD-SITE-NOTES.md` and a new row to the Known Boards table.
+2. Document the scraping approach, card selectors, filter quirks, and any blocked ATS systems in `JOB-BOARD-SITE-NOTES.md`.
+3. Add a new row to the Known Boards table in `JOB-BOARD-SITE-NOTES.md`.
 4. Record lessons learned in the Improvement Log section of `JOB-BOARD-WORKFLOW.md`.
 
 ---
 
 ## Requirements
 
-- [Cowork](https://www.anthropic.com) — Anthropic's agentic desktop tool (used to run the workflow)
-- A personal profile in `MY-PROFILE.md` (see template)
-- `.env` configured with your paths and any required API keys
+- [Cowork](https://www.anthropic.com) — Anthropic's agentic desktop tool
+- Claude in Chrome browser extension (for LinkedIn and Wellfound)
+- A completed `MY-PROFILE.md` and configured `.env`
 
-No additional software installation is required. All browser automation runs inside Cowork's built-in Puppeteer environment.
+See [SETUP.md](SETUP.md) for full configuration instructions.
 
 ---
 

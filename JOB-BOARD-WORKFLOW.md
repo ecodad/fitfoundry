@@ -105,6 +105,8 @@ File contents:
 **Location:** [location] | **Workplace:** [In-person / Hybrid / Remote]
 
 **Apply:** [direct link to the job posting]
+**Company career site:** [leave blank — filled in Step 4.5]
+**Ghost job check:** [leave blank — filled in Step 4.5]
 
 ---
 
@@ -123,6 +125,42 @@ File contents:
 [Paste the complete job description text as scraped from the posting.]
 
 ---
+
+---
+
+STEP 4.5 — GHOST JOB CHECK
+
+For each individual job file created in Step 4, attempt to verify the posting on the company's own career site (not the job board it was sourced from). This guards against ghost jobs — postings left up on aggregator boards after the role has been filled or cancelled.
+
+**How to find the company career site:**
+1. Check if the company uses a known ATS. Most companies use one of: Workday, Lever, Greenhouse, Ashby, iCIMS, SmartRecruiters, Taleo, BambooHR.
+2. Visit the company's website and look for a "Careers" or "Jobs" link. It typically points directly to the ATS.
+3. For Workday boards, use the undocumented CXS POST API with `searchText` set to the job title — this is faster than browsing (see JOB-BOARD-SITE-NOTES.md §7 for the pattern).
+4. For Lever boards, navigate to `jobs.lever.co/[company-slug]` and search the page for the job title.
+5. For Greenhouse boards, use the public API: `https://boards-api.greenhouse.io/v1/boards/[company-slug]/jobs?content=false` and filter by title.
+6. If the career site is blocked by Cloudflare or the egress proxy, try Puppeteer as a fallback.
+
+**Outcome — update the individual job file header with one of:**
+
+If confirmed:
+```
+**Company career site:** [direct URL to the posting on the company's ATS]
+**Ghost job check:** ✅ Confirmed live on [ATS name] ([YYYY-MM-DD])
+```
+
+If not confirmed (posting not found):
+```
+**Company career site:** [company careers page URL if found, otherwise leave blank]
+**Ghost job check:** ⚠️ Possible Ghost Job — posting not found on company career site ([YYYY-MM-DD])
+```
+
+If the career site could not be accessed at all (blocked, CAPTCHA, etc.):
+```
+**Company career site:** [URL attempted, if known]
+**Ghost job check:** ❓ Unverified — career site inaccessible ([YYYY-MM-DD])
+```
+
+**Important:** Do not remove or deprioritize jobs that cannot be confirmed. Keep all scored files regardless of ghost job status — the posting may be real but unlisted, posted only on the aggregator, or the career site may be temporarily inaccessible. The note is advisory.
 
 ---
 
@@ -152,6 +190,22 @@ Confirm when all files have been saved.
 ---
 
 ## IMPROVEMENT LOG
+
+### 2026-02-25 — Ghost Job Check Process (First Run)
+
+Verified three scored jobs against company career sites. All three were confirmed live. Key findings:
+
+**Boston Dynamics** uses Workday (`bostondynamics.wd1.myworkdayjobs.com`). The Workday CXS POST API works without authentication — POST to `/wday/cxs/bostondynamics/Boston_Dynamics/jobs` with `{ searchText: "Technical Program Manager", limit: 20, offset: 0, appliedFacets: {}, returnFacets: false }`. Job confirmed at req ID `R2354`.
+
+**Commonwealth Fusion Systems** uses Lever (`jobs.lever.co/cfsenergy`). Navigate directly and search page text for job title. The exact posting "Principal R&D Technical Project Manager" was found at `jobs.lever.co/cfsenergy/b2c21785-e359-410c-b176-8e3d1b3a3911`. Note: CFS's Greenhouse board (`boards.greenhouse.io/cfsenergy`) returned zero jobs — they are on Lever only.
+
+**Johnson Controls** uses Workday (`jci.wd5.myworkdayjobs.com/JCI`). Same CXS POST API pattern. Job confirmed at req ID `WD30260051`. The company's public careers site (`jobs.johnsoncontrols.com`) redirects to Workday for actual job search.
+
+**ATS discovery tip:** If you don't know which ATS a company uses, navigate to their careers page and check where the "Apply" or job listing links point. The subdomain almost always identifies the platform (e.g., `*.wd5.myworkdayjobs.com` = Workday, `jobs.lever.co/*` = Lever, `boards.greenhouse.io/*` = Greenhouse, `jobs.ashbyhq.com/*` = Ashby).
+
+**Egress proxy limitation:** `jobs.lever.co`, `cfsenergy.com`, and `jobs.johnsoncontrols.com` are all blocked by the VM's network egress proxy. Use Puppeteer (not Bash/Python curl or WebFetch) for all career site verification — Puppeteer bypasses the proxy.
+
+---
 
 ### 2026-02-22 — Climatebase In-Person Run (Lessons Learned)
 
