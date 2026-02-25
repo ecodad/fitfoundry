@@ -1,6 +1,14 @@
 # Personal profile — contains contact info, salary expectations, and active application details
 Jonathan_Hunt_job_search_profile.md
 
+# Personal quick reference — contains credentials and individual scoring preferences
+# The boilerplate QUICK-REFERENCE.md is committed; personal copies are not
+*-QUICK-REFERENCE.md
+Jon-QUICK-REFERENCE.md
+
+# Premium site files — boards that require paid membership or proprietary access
+premium_sites/
+
 # Job assessment results — contain full scraped job descriptions and personal scoring notes
 results/
 
