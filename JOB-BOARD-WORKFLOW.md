@@ -7,9 +7,11 @@
 ## WORKFLOW PROMPT
 
 ```
-Read the environment configuration from .env to load PROFILE_PATH and OUTPUT_FOLDER.
+Read the environment configuration from .env to load PROFILE_PATH, QUICK_REFERENCE_PATH, and OUTPUT_FOLDER.
 
-Read my professional profile from the path specified in PROFILE_PATH. Hold it in context for the entire workflow — you will use it to assess every job.
+Read my full professional profile from the path specified in PROFILE_PATH. Hold it in context for the entire workflow — you will use it to assess fit and interest for every job.
+
+Read my quick reference from the path specified in QUICK_REFERENCE_PATH. Hold it in context for the entire workflow — it contains your scoring calibration table, credentials, and board-specific search settings.
 
 Read JOB-BOARD-SITE-NOTES.md and hold it in context. You will use the per-site scraping notes when you reach Step 1.
 

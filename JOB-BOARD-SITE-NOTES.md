@@ -20,6 +20,9 @@ Reference for the agent running the job board workflow. Read this file at the st
 | 10 | YCombinator | `sites/YCombinator.md` | 2026-02-22 | None | Puppeteer JS |
 | 11 | BEV-Jobs | `sites/BreakthroughEnergy.md` | 2026-02-23 | None | Puppeteer JS (UI filters) |
 | 12 | BEF-Jobs | `sites/BreakthroughEnergy.md` | 2026-02-23 | None | Puppeteer JS (no filter) |
+| 13 | Formlabs | `sites/Formlabs.md` | 2026-02-25 | None | Puppeteer JS (native select filter) |
+| 14 | Indeed | `sites/Indeed.md` | Never | Indeed account (MCP connector) | Indeed MCP — `search_jobs` + `get_job_details` tools |
+| 15 | Dice | `sites/Dice.md` | Never | Dice account (MCP connector) | Dice MCP (`search_jobs`) + Puppeteer for full descriptions |
 
 ---
 

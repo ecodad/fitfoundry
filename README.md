@@ -34,6 +34,7 @@ For setup instructions, see [SETUP.md](SETUP.md).
 | 10 | Y Combinator | workatastartup.com | Server-rendered; no login required; industry filter unreliable |
 | 11 | BEV Jobs | bevjobs.breakthroughenergy.org | Getro; ~767 jobs; UI filters required (URL params → HTTP 500) |
 | 12 | BEF Jobs | befjobs.breakthroughenergy.org | Getro; ~77 jobs; small enough to review unfiltered |
+| 13 | Formlabs | careers.formlabs.com | Direct company site; React Table; native select filter; no auth; all roles load immediately |
 
 Detailed scraping notes, selector patterns, filter quirks, and known ATS compatibility issues for each board are in `JOB-BOARD-SITE-NOTES.md`.
 

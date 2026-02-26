@@ -9,8 +9,14 @@ Jon-QUICK-REFERENCE.md
 # Premium site files — boards that require paid membership or proprietary access
 premium_sites/
 
+# Terms of Service research — local reference copies, not for redistribution
+ToS/
+
 # Job assessment results — contain full scraped job descriptions and personal scoring notes
 results/
 
 # Environment variables — contain API keys and personal paths
 .env
+
+# Workshop Outline
+workshop/
