@@ -137,9 +137,3 @@ Generated for each posting where both interest and fit are positive:
 - A completed `MY-PROFILE.md` and configured `.env`
 
 See [SETUP.md](SETUP.md) for full configuration instructions.
-
----
-
-## License
-
-MIT
