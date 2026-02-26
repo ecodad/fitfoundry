@@ -10,7 +10,7 @@
 
 ## Overview
 
-Indeed via the official MCP connector. Unlike the Puppeteer-based boards, this uses Indeed's sanctioned API surface — no ToS exposure for personal use. Access requires the Indeed connector to be active at Cowork session start; it cannot be added mid-session. Broad job board with high volume; pre-screening by title is essential. Run multiple targeted keyword searches rather than one broad search.
+Indeed via the official MCP connector. Unlike the Puppeteer-based boards, this uses Indeed's sanctioned API surface — no ToS exposure for personal use. Access requires the Indeed connector to be active at Cowork session start; it cannot be added mid-session. Broad job board with high volume; pre-screening by title before fetching details is essential. Run multiple targeted keyword searches and deduplicate before pulling any descriptions.
 
 ---
 
@@ -60,44 +60,74 @@ Indeed via the official MCP connector. Unlike the Puppeteer-based boards, this u
 No URL manipulation required. All parameters passed directly to MCP tools.
 
 **`search_jobs` parameters:**
+
 | Parameter | Value | Notes |
 |-----------|-------|-------|
-| `query` | `technical program manager` | Run as separate searches per keyword |
-| `location` | `Boston, MA` | Use city + state; broader than zip |
+| `query` | *(from QUICK_REFERENCE_PATH → Indeed → Keywords)* | Run as separate searches per keyword |
+| `location` | *(from QUICK_REFERENCE_PATH → Indeed → Location, or Default search location)* | Use city + state |
 | `employment_type` | `fulltime` | Excludes contract, part-time, intern |
 
-**Recommended query sequence (run in order, deduplicate by job ID):**
-1. `technical program manager`
-2. `operations program manager`
-3. `senior program manager`
+Run each keyword as a separate search call, collect all results, then deduplicate by job ID before proceeding.
 
 ---
 
 ## Extraction
 
-**Step 1 — Search:**
+**Step 1 — Search (run all keywords, deduplicate by job ID):**
 ```
-search_jobs(query="technical program manager", location="Boston, MA", employment_type="fulltime")
+search_jobs(query="[keyword]", location="[location]", employment_type="fulltime")
 ```
-Returns: job titles, companies, locations, salaries (where listed), application URLs, and job IDs.
+Returns: job titles, companies, locations, salaries where listed, application URLs, job IDs.
 
-**Step 2 — Detail retrieval for candidates:**
+**Step 2 — Detail retrieval for pre-screened candidates:**
 ```
 get_job_details(job_id="[ID from search results]")
 ```
 Returns: full job description, requirements, qualifications, benefits, company information.
+Only call `get_job_details` for jobs that passed the title pre-screen. Do not call it for all results.
 
-**Step 3 — Optional resume personalization:**
+**Step 3 — Optional resume context (once per session):**
 ```
 get_resume()
 ```
-Retrieves experience from the authenticated Indeed profile. Run once per session to add context for scoring.
+Retrieves experience from the authenticated Indeed profile. Run once at session start to add supplementary context for scoring. Also serves as the connector validation check.
 
-**Step 4 — Optional company research:**
+**Step 4 — Optional company research (for top scores):**
 ```
 get_company_data(company="[Company Name]")
 ```
-Returns Indeed data on employee satisfaction, compensation, culture, management, and reviews. Run on any company scoring 7+ before creating the individual file.
+Returns Indeed data on employee satisfaction, compensation, culture, management, and reviews. Call for any job scoring 7 or higher, before creating its individual file.
+
+---
+
+## MCP Workflow Notes
+
+These notes describe how the Indeed connector flow differs from the standard Puppeteer flow. The FITFOUNDRY-WORKFLOW.md MCP branch references this section.
+
+**Connector validation:** Call `get_resume()` at session start. If it fails, the connector is not active — stop and restart the session with the connector connected. If it succeeds, hold any returned experience as supplementary scoring context.
+
+**Search and deduplication:** Run all keywords from QUICK_REFERENCE_PATH (Indeed → Keywords) sequentially. Collect results. Deduplicate by Job Id before proceeding to title pre-screen. A single job may match multiple keywords; keep one entry and note which queries matched it.
+
+**Title pre-screen before detail fetch:** Unlike Puppeteer boards where you visit each posting inline, screen the deduplicated title list first using the target roles and "Not a fit" constraints from your profile. Only call `get_job_details` for titles that survive the pre-screen. This avoids making unnecessary API calls on clearly irrelevant postings.
+
+**Company research:** For any job scoring 7 or higher, call `get_company_data(company)` before creating the individual file. Include the result as a **Company Notes** section in the file (2–3 sentences on culture, satisfaction, and compensation). Omit this section for scores below 7.
+
+**Individual file — additional fields for Indeed runs:**
+```
+**Source:** Indeed (MCP)
+**Type:** Full-time
+**Found:** [YYYY-MM-DD]
+```
+And for scores ≥7, add after Potential Gaps:
+```
+## Company Notes
+[2–3 sentences from get_company_data on culture, satisfaction, and compensation.]
+```
+
+**Master list column format:**
+```
+| # | Title | Company | Location | Salary | Score | Ghost Check | File |
+```
 
 ---
 

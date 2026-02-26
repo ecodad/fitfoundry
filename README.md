@@ -35,6 +35,8 @@ For setup instructions, see [SETUP.md](SETUP.md).
 | 11 | BEV Jobs | bevjobs.breakthroughenergy.org | Getro; ~767 jobs; UI filters required (URL params → HTTP 500) |
 | 12 | BEF Jobs | befjobs.breakthroughenergy.org | Getro; ~77 jobs; small enough to review unfiltered |
 | 13 | Formlabs | careers.formlabs.com | Direct company site; React Table; native select filter; no auth; all roles load immediately |
+| 14 | Indeed | indeed.com | MCP connector — `search_jobs` + `get_job_details` + `get_company_data`. Requires Indeed connector active at session start. |
+| 15 | Dice | dice.com | MCP connector for discovery + Puppeteer for full descriptions. Tech-focused; higher IC engineering density. |
 
 Detailed scraping notes, selector patterns, filter quirks, and known ATS compatibility issues for each board are in `JOB-BOARD-SITE-NOTES.md`.
 
@@ -124,7 +126,7 @@ Generated for each posting where both interest and fit are positive:
 1. Run the workflow and select "new board" at the site selection step.
 2. Document the scraping approach, card selectors, filter quirks, and any blocked ATS systems in `JOB-BOARD-SITE-NOTES.md`.
 3. Add a new row to the Known Boards table in `JOB-BOARD-SITE-NOTES.md`.
-4. Record lessons learned in the Improvement Log section of `JOB-BOARD-WORKFLOW.md`.
+4. Record lessons learned in the Improvement Log section of `FITFOUNDRY-WORKFLOW.md`.
 
 ---
 

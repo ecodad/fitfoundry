@@ -32,7 +32,7 @@ Reference for the agent running the job board workflow. Read this file at the st
 2. Read `QUICK_REFERENCE_PATH` from `.env` and load that file for candidate profile, scoring calibration, and credentials
 3. Ask the user which board to run
 4. Load only `sites/[BoardName].md` for the selected board
-5. Proceed with the workflow in `JOB-BOARD-WORKFLOW.md`
+5. Proceed with the workflow in `FITFOUNDRY-WORKFLOW.md`
 
 ---
 
@@ -108,7 +108,7 @@ Any lazy-loading or virtual DOM behavior that affects extraction.]
    - Any blocked ATS systems
 3. Create a new file in `sites/` using the standard format above.
 4. Add a row to the Known Boards table in this file.
-5. Record lessons learned in the Improvement Log in `JOB-BOARD-WORKFLOW.md`.
+5. Record lessons learned in the Improvement Log in `FITFOUNDRY-WORKFLOW.md`.
 6. Update `README.md` with the new board in the Supported Job Boards table.
 
 ### ATS Identification Tip

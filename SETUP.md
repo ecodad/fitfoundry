@@ -33,6 +33,7 @@ Open `.env` and set the following variables:
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `PROFILE_PATH` | Path to your personal profile file | `./MY-PROFILE.md` |
+| `QUICK_REFERENCE_PATH` | Path to your personal quick reference file | `./QUICK-REFERENCE.md` |
 | `OUTPUT_FOLDER` | Directory where result files are written | `./results/` |
 | `ALGOLIA_APP_ID` | Algolia application ID for the 80,000 Hours board | *(required for that board)* |
 | `ALGOLIA_API_KEY` | Algolia read-only API key for the 80,000 Hours board | *(required for that board)* |
@@ -65,7 +66,7 @@ LinkedIn and Wellfound both require an authenticated browser session. Puppeteer 
 
 ## 5. Run the Workflow
 
-Open Cowork and paste the full contents of `JOB-BOARD-WORKFLOW.md` into a new session. The agent will:
+Open Cowork and paste the full contents of `FITFOUNDRY-WORKFLOW.md` into a new session. The agent will:
 
 1. Ask which job board to run and what run type (remote, hybrid, in-person, or all).
 2. Scrape and filter listings using the site-specific approach in `JOB-BOARD-SITE-NOTES.md`.
@@ -84,8 +85,9 @@ You do not need to do anything during the run beyond the initial board selection
 | `.env.example` | ✅ Yes | Safe template — no real values |
 | `.env` | ❌ No | Contains API keys and personal paths |
 | `MY-PROFILE.md` | ✅ Yes | Boilerplate personal profile template |
+| `QUICK-REFERENCE.md` | ✅ Yes | Personal settings template — copy and fill in; do not commit your personal copy |
 | `results/` | ❌ No | Contains scraped job descriptions and personal assessments |
-| `JOB-BOARD-WORKFLOW.md` | ✅ Yes | Generic workflow prompt |
+| `FITFOUNDRY-WORKFLOW.md` | ✅ Yes | Unified workflow prompt — paste into Cowork each session |
 | `JOB-BOARD-SITE-NOTES.md` | ✅ Yes | Technical scraping reference |
 | `README.md` | ✅ Yes | Project overview |
 | `SETUP.md` | ✅ Yes | This file |
@@ -102,8 +104,13 @@ job-search/
 ├── MY-PROFILE.md                 ← your profile (fill in before first run)
 ├── README.md                     ← project overview
 ├── SETUP.md                      ← this file
-├── JOB-BOARD-WORKFLOW.md        ← workflow prompt — paste into Cowork each session
-├── JOB-BOARD-SITE-NOTES.md     ← per-site scraping reference
+├── FITFOUNDRY-WORKFLOW.md       ← workflow prompt — paste into Cowork each session
+├── JOB-BOARD-SITE-NOTES.md     ← board index and site file format reference
+├── QUICK-REFERENCE.md           ← personal settings template (copy and fill in)
+├── sites/                       ← per-board scraping notes and MCP workflow notes
+│   ├── Indeed.md
+│   ├── Dice.md
+│   └── [BoardName].md ...
 └── results/                     ← generated output (not committed)
     ├── YYYY-MM-DD-BoardName.md  ← master list + session summary per run
     └── Company_Role_YYYY-MM-DD.md  ← individual file per scored job

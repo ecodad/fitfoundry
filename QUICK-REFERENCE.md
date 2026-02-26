@@ -10,6 +10,7 @@ The agent reads this file at the start of every session to calibrate scoring and
 
 - **Name:** [Your name]
 - **Location:** [Your city / region; note if open to remote and what scope — US only, global, etc.]
+- **Default search location:** [City, State used as the location parameter in job board searches — e.g., `Boston, MA`]
 - **Background:** [2–3 sentences on your experience — function, industry, years, notable employers or projects]
 - **Target sectors:** [e.g., Climate tech, AI/ML, Advanced manufacturing, Healthcare]
 - **Goal:** [One sentence on what you are optimizing for in your next role]
@@ -58,6 +59,17 @@ ALGOLIA_INDEX=jobs_prod
 ### 80,000 Hours
 - **Locations:** [e.g., Boston metro area, Remote (USA)]
 - **Exclude role types:** [e.g., Internship, Fellowship, Part-time]
+
+### Indeed
+- **Keywords:** [e.g., `technical program manager`, `operations program manager`, `senior program manager` — run as separate searches, results are deduplicated]
+- **Location:** [City, State — e.g., `Boston, MA`; defaults to Default search location above if blank]
+- **Employment type:** `fulltime`
+
+### Dice
+- **Keywords:** [e.g., `technical program manager`, `operations program manager`, `senior program manager` — run as separate searches, results are deduplicated]
+- **Location:** [City, State — e.g., `Boston, MA`; defaults to Default search location above if blank]
+- **Employment type:** `FULLTIME`
+- **Employer type filter:** `Direct Hire` (set to blank to include staffing firm postings — they will be flagged either way)
 
 ---
 
