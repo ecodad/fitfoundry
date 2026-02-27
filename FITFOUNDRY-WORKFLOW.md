@@ -1,4 +1,11 @@
-# FitFoundry Workflow
+# FitFoundry — Job Board Search
+
+> **Stage 2 of 3.** FitFoundry is part of a three-stage workflow:
+> - **Stage 1 — ProfileBuilder** (`PROFILEBUILDER.md`): Run once to create your profile and quick reference from an interview. Re-run when your situation changes.
+> - **Stage 2 — FitFoundry** (this file): Run repeatedly to search job boards and score listings against your profile.
+> - **Stage 3 — LaunchKit** (`LAUNCHKIT.md`): Run after reviewing results to generate tailored resumes and cover letters for jobs you want to pursue.
+>
+> Complete Stage 1 before your first FitFoundry run.
 
 **Paste this prompt into Cowork each time you run it. The agent will guide you through board selection before starting.**
 
