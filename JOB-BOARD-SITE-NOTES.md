@@ -6,23 +6,41 @@ Reference for the agent running the job board workflow. Read this file at the st
 
 ## Known Boards
 
+### Primary — MCP Connectors (Recommended Starting Point)
+
+*Official API access. No Terms of Service concerns for personal job search use.*
+
+| # | Label | Site File | Last Run | Auth | Method |
+|---|-------|-----------|----------|------|--------|
+| 14 | Indeed | `sites/Indeed.md` | 2026-02-28 | Indeed account (MCP connector) | Indeed MCP — `search_jobs` + `get_job_details` tools |
+| 15 | Dice | `sites/Dice.md` | Never | Dice account (MCP connector) | Dice MCP (`search_jobs`) + Puppeteer for full descriptions |
+
+### Secondary — Puppeteer Boards
+
+*Mission-driven, niche, and direct company boards. Require Puppeteer MCP server.*
+
 | # | Label | Site File | Last Run | Auth | Method |
 |---|-------|-----------|----------|------|--------|
 | 1 | ClimateBase (Remote) | `sites/Climatebase.md` | 2026-02-21 | None | Puppeteer JS |
 | 2 | ClimateBase (In-Person) | `sites/Climatebase.md` | 2026-02-22 | None | Puppeteer JS |
 | 3 | GreentownLabs | `premium_sites/GreentownLabs.md` | 2026-02-22 | None | Puppeteer JS |
-| 4 | LinkedIn | `premium_sites/LinkedIn.md` | 2026-02-23 | LinkedIn login | Claude in Chrome |
-| 5 | TheEngine | `premium_sites/TheEngine.md` | 2026-02-22 | None | Puppeteer JS |
-| 6 | 80kHours | `sites/80kHours.md` | 2026-02-22 | None | Puppeteer (Algolia API) |
-| 7 | Draper | `sites/Draper.md` | 2026-02-22 | None | Puppeteer (Workday API) |
-| 8 | WorkOnClimate | `sites/WorkOnClimate.md` | N/A | Slack membership | Manual only |
-| 9 | Wellfound | `sites/Wellfound.md` | Never | Wellfound login | Claude in Chrome |
-| 10 | YCombinator | `sites/YCombinator.md` | 2026-02-22 | None | Puppeteer JS |
-| 11 | BEV-Jobs | `sites/BreakthroughEnergy.md` | 2026-02-23 | None | Puppeteer JS (UI filters) |
-| 12 | BEF-Jobs | `sites/BreakthroughEnergy.md` | 2026-02-23 | None | Puppeteer JS (no filter) |
-| 13 | Formlabs | `sites/Formlabs.md` | 2026-02-25 | None | Puppeteer JS (native select filter) |
-| 14 | Indeed | `sites/Indeed.md` | Never | Indeed account (MCP connector) | Indeed MCP — `search_jobs` + `get_job_details` tools |
-| 15 | Dice | `sites/Dice.md` | Never | Dice account (MCP connector) | Dice MCP (`search_jobs`) + Puppeteer for full descriptions |
+| 4 | TheEngine | `premium_sites/TheEngine.md` | 2026-02-22 | None | Puppeteer JS |
+| 5 | 80kHours | `sites/80kHours.md` | 2026-02-22 | None | Puppeteer (Algolia API) |
+| 6 | Draper | `sites/Draper.md` | 2026-02-22 | None | Puppeteer (Workday API) |
+| 7 | WorkOnClimate | `sites/WorkOnClimate.md` | N/A | Slack membership | Manual only |
+| 8 | YCombinator | `sites/YCombinator.md` | 2026-02-22 | None | Puppeteer JS |
+| 9 | BEV-Jobs | `sites/BreakthroughEnergy.md` | 2026-02-23 | None | Puppeteer JS (UI filters) |
+| 10 | BEF-Jobs | `sites/BreakthroughEnergy.md` | 2026-02-23 | None | Puppeteer JS (no filter) |
+| 11 | Formlabs | `sites/Formlabs.md` | 2026-02-25 | None | Puppeteer JS (native select filter) |
+
+### ⚠️ Caution — Terms of Service Concerns
+
+*Automated scraping of these boards may violate their Terms of Service. Both require Claude in Chrome and an authenticated login session. Use at your own discretion.*
+
+| # | Label | Site File | Last Run | Auth | Method |
+|---|-------|-----------|----------|------|--------|
+| 12 | LinkedIn | `premium_sites/LinkedIn.md` | 2026-02-23 | LinkedIn login (required) | Claude in Chrome |
+| 13 | Wellfound | `sites/Wellfound.md` | Never | Wellfound login (required) | Claude in Chrome |
 
 ---
 
