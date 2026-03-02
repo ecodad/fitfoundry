@@ -32,6 +32,7 @@ Reference for the agent running the job board workflow. Read this file at the st
 | 9 | BEV-Jobs | `sites/BreakthroughEnergy.md` | 2026-02-23 | None | Puppeteer JS (UI filters) |
 | 10 | BEF-Jobs | `sites/BreakthroughEnergy.md` | 2026-02-23 | None | Puppeteer JS (no filter) |
 | 11 | Formlabs | `sites/Formlabs.md` | 2026-02-25 | None | Puppeteer JS (native select filter) |
+| 16 | MIT | `sites/MIT.md` | 2026-03-01 | None | Puppeteer JS (AngularJS SPA, PeopleClick ATS) |
 
 ### ⚠️ Caution — Terms of Service Concerns
 
@@ -39,7 +40,7 @@ Reference for the agent running the job board workflow. Read this file at the st
 
 | # | Label | Site File | Last Run | Auth | Method |
 |---|-------|-----------|----------|------|--------|
-| 12 | LinkedIn | `premium_sites/LinkedIn.md` | 2026-02-23 | LinkedIn login (required) | Claude in Chrome |
+| 12 | LinkedIn | `premium_sites/LinkedIn.md` | NA | LinkedIn login (required) | Claude in Chrome |
 | 13 | Wellfound | `sites/Wellfound.md` | Never | Wellfound login (required) | Claude in Chrome |
 
 ---
