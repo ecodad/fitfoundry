@@ -293,15 +293,15 @@ Filename: OUTPUT_FOLDER/[Company]_[JobTitle]_[YYYY-MM-DD].md
 
 ## IMPROVEMENT LOG
 
-### 2026-02-25 — Ghost Job Check Process (First Run)
+### Ghost Job Check — ATS Patterns Reference
 
-Verified three scored jobs against company career sites. All three were confirmed live. Key findings:
+Workday, Lever, and Greenhouse are the most common ATS platforms you will encounter. Verified patterns for each:
 
-**Boston Dynamics** uses Workday (`bostondynamics.wd1.myworkdayjobs.com`). The Workday CXS POST API works without authentication — POST to `/wday/cxs/bostondynamics/Boston_Dynamics/jobs` with `{ searchText: "Technical Program Manager", limit: 20, offset: 0, appliedFacets: {}, returnFacets: false }`. Job confirmed at req ID `R2354`.
+**Workday** — CXS POST API works without authentication. POST to `/wday/cxs/[company-slug]/[board-slug]/jobs` with `{ searchText: "[job title]", limit: 20, offset: 0, appliedFacets: {}, returnFacets: false }`. Board slugs vary by company — inspect the Workday URL when navigating the company's careers page to find the tenant ID and board slug. Example: a company on `*.wd1.myworkdayjobs.com` vs `*.wd5.myworkdayjobs.com` — both use the same CXS API pattern, just different subdomains.
 
-**Commonwealth Fusion Systems** uses Lever (`jobs.lever.co/cfsenergy`). Navigate directly and search page text for job title. Posting found at `jobs.lever.co/cfsenergy/b2c21785-e359-410c-b176-8e3d1b3a3911`. Note: CFS's Greenhouse board (`boards.greenhouse.io/cfsenergy`) returned zero jobs — they are on Lever only.
+**Lever** — Navigate to `jobs.lever.co/[company-slug]` directly and search page text for the job title. Note: some companies list on Lever but also have a stale Greenhouse board — check both if the first returns zero results.
 
-**Johnson Controls** uses Workday (`jci.wd5.myworkdayjobs.com/JCI`). Same CXS POST API pattern. Job confirmed at req ID `WD30260051`. The company's public careers site (`jobs.johnsoncontrols.com`) redirects to Workday for actual job search.
+**Greenhouse** — Query `https://boards-api.greenhouse.io/v1/boards/[company-slug]/jobs?content=false` and filter results by title.
 
 **ATS discovery tip:** If you don't know which ATS a company uses, navigate to their careers page and check where the "Apply" or job listing links point. The subdomain almost always identifies the platform.
 
@@ -329,15 +329,11 @@ The job listings are rendered in a React app. Standard link selectors (`a[href*=
 
 ---
 
-### 2026-02-22 — Greentown Labs Run (Lessons Learned)
+### General Browser Scraping Notes
 
-**Scraping approach:** Standard WordPress/static page — no lazy loading. Job cards are `<a class="card x-between flex y-center">` elements containing `<h3>` (title) and `<h4>` (company). Walk backwards through siblings to associate cards with their category headings. 65 jobs in one pass, no pagination.
+**LinkedIn short URLs:** Some boards surface listings that link to `lnkd.in/` shortened URLs, which redirect through a LinkedIn warning page. Navigate to the final destination URL directly rather than following through LinkedIn.
 
-**Location filter:** The `location=boston` URL parameter has no effect. The board mixes Boston and Houston members with no location marker on listing cards. Determine location by visiting each individual posting. Most member companies are Boston-area.
-
-**LinkedIn short URLs:** Several Greentown listings link to `lnkd.in/` shortened URLs that redirect through a LinkedIn warning page. Navigate to the final destination directly, not through LinkedIn.
-
-**Dover ATS:** Dover-hosted job postings (`app.dover.com`) are blocked by Cloudflare bot protection and the network egress proxy. Cannot be fetched via Puppeteer or WebFetch. Mark as ❓ Unverified.
+**Dover ATS:** Dover-hosted job postings (`app.dover.com`) are blocked by Cloudflare bot protection and the network egress proxy. Cannot be fetched via Puppeteer or WebFetch. Mark all Dover postings as ❓ Unverified.
 
 ---
 

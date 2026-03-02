@@ -53,19 +53,17 @@ If you provide a resume, ProfileBuilder pre-fills answers it can infer and only 
 |---|-------|-----|-------|
 | 1 | Climatebase (Remote) | climatebase.org | React SPA; Algolia-backed; scrollable container approach |
 | 2 | Climatebase (In-Person) | climatebase.org | Same board, Hybrid + In-person filter via UI |
-| 3 | Greentown Labs | greentownlabs.com/careers | Static; mixes Boston and Houston members; no date filter |
-| 4 | LinkedIn | linkedin.com/jobs | **Requires Claude in Chrome + login.** JS injection blocked — uses accessibility tree. |
-| 5 | The Engine | engine.xyz/careers | MIT Tough Tech portfolio; Getro platform; URL params work |
-| 6 | 80,000 Hours | jobs.80000hours.org | Algolia API; high curation, low volume; creds in `.env` |
-| 7 | Draper Laboratory | draper.wd5.myworkdayjobs.com | Workday CXS API; most roles require security clearance |
-| 8 | Work on Climate | workonclimate.org | Slack community + newsletter only — not scrapable |
-| 9 | Wellfound | wellfound.com/jobs | **Requires Claude in Chrome + login.** Cloudflare CAPTCHA blocks Puppeteer. |
-| 10 | Y Combinator | workatastartup.com | Server-rendered; no login required; industry filter unreliable |
-| 11 | BEV Jobs | bevjobs.breakthroughenergy.org | Getro; ~767 jobs; UI filters required (URL params → HTTP 500) |
-| 12 | BEF Jobs | befjobs.breakthroughenergy.org | Getro; ~77 jobs; small enough to review unfiltered |
-| 13 | Formlabs | careers.formlabs.com | Direct company site; React Table; native select filter; no auth |
-| 14 | Indeed | indeed.com | MCP connector — `search_jobs` + `get_job_details` + `get_company_data` |
-| 15 | Dice | dice.com | MCP connector for discovery + Puppeteer for full descriptions |
+| 3 | 80,000 Hours | jobs.80000hours.org | Algolia API; high curation, low volume; creds in `.env` |
+| 4 | Draper Laboratory | draper.wd5.myworkdayjobs.com | Workday CXS API; most roles require security clearance |
+| 5 | Work on Climate | workonclimate.org | Slack community + newsletter only — not scrapable |
+| 6 | Wellfound | wellfound.com/jobs | **Requires Claude in Chrome + login.** Cloudflare CAPTCHA blocks Puppeteer. |
+| 7 | Y Combinator | workatastartup.com | Server-rendered; no login required; industry filter unreliable |
+| 8 | BEV Jobs | bevjobs.breakthroughenergy.org | Getro; ~767 jobs; UI filters required (URL params → HTTP 500) |
+| 9 | BEF Jobs | befjobs.breakthroughenergy.org | Getro; ~77 jobs; small enough to review unfiltered |
+| 10 | Formlabs | careers.formlabs.com | Direct company site; React Table; native select filter; no auth |
+| 11 | LinkedIn | linkedin.com/jobs | **Requires Claude in Chrome + login.** JS injection blocked — uses accessibility tree. |
+| 12 | Indeed | indeed.com | MCP connector — `search_jobs` + `get_job_details` + `get_company_data` |
+| 13 | Dice | dice.com | MCP connector for discovery + Puppeteer for full descriptions |
 
 Detailed scraping notes, selector patterns, filter quirks, and known ATS compatibility issues for each board are in `JOB-BOARD-SITE-NOTES.md`.
 

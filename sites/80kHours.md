@@ -1,8 +1,8 @@
 # 80,000 Hours
 
 **Board #:** 6
-**URL:** `https://jobs.80000hours.org/?refinementList%5Btags_location_80k%5D%5B0%5D=Boston%20metro%20area&refinementList%5Btags_location_80k%5D%5B1%5D=Remote%2C%20USA`
-**Last run:** 2026-02-22
+**URL:** `https://jobs.80000hours.org/` (apply location and role-type filters via UI or use the Algolia API query below — set location values from `QUICK_REFERENCE_PATH → Default search location`)
+**Last run:** Never
 **Auth required:** No
 **Scraping method:** Puppeteer JS — Algolia API query (faster and more complete than DOM scraping)
 
@@ -10,7 +10,7 @@
 
 ## Overview
 
-Curated job board from the 80,000 Hours organization, focused on high-impact careers (AI safety, biosecurity, climate, global health). All roles are handpicked. Low volume (~89 Boston + Remote USA roles as of 2026-02-22), high curation, minimal noise. Heavily weighted toward AI safety & policy and biosecurity; climate has only ~8 roles but they are high quality.
+Curated job board from the 80,000 Hours organization, focused on high-impact careers (AI safety, biosecurity, climate, global health). All roles are handpicked. Low volume (typically ~70–100 roles for a metro area + Remote USA filter), high curation, minimal noise. Heavily weighted toward AI safety & policy and biosecurity; climate has only ~8 roles but they are high quality.
 
 Individual job pages link directly to the employer's ATS — no side panel navigation needed.
 
@@ -21,12 +21,12 @@ Individual job pages link directly to the employer's ATS — no side panel navig
 URL-based filters use Algolia facet syntax. These set the initial state of the UI but the Algolia API query below is faster and more complete.
 
 ```
-refinementList[tags_location_80k][0]=Boston metro area
+refinementList[tags_location_80k][0]=[YOUR_METRO_AREA]
 refinementList[tags_location_80k][1]=Remote, USA
 ```
 
 **Algolia filter syntax (for API queries):**
-- Location: `tags_location_80k:"Boston metro area"`, `"Remote, USA"`, `"Remote, Global"`
+- Location: `tags_location_80k:"[YOUR_METRO_AREA]"`, `"Remote, USA"`, `"Remote, Global"` — set location from `QUICK_REFERENCE_PATH → Default search location`
 - Area: `tags_area:"AI safety & policy"`, `"Climate change"`, `"Biosecurity"`, etc.
 - Role type: `tags_role_type:"Full-time"`, `"Internship"`, `"Fellowship"`
 - Combine with ` OR ` / ` AND `
@@ -55,8 +55,9 @@ fetch(`https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX}/quer
     'X-Algolia-API-Key': ALGOLIA_API_KEY,
     'Content-Type': 'application/json'
   },
+  // Replace location values with those from QUICK_REFERENCE_PATH → Default search location
   body: JSON.stringify({
-    filters: 'tags_location_80k:"Boston metro area" OR tags_location_80k:"Remote, USA"',
+    filters: 'tags_location_80k:"[YOUR_METRO_AREA]" OR tags_location_80k:"Remote, USA"',
     hitsPerPage: 200,
     page: 0,
     attributesToRetrieve: [
@@ -74,7 +75,7 @@ fetch(`https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX}/quer
 
 ## Pre-screening Filters
 
-With ~70 full-time roles for Boston + Remote USA, pre-screening is quick but worthwhile.
+With a typical result set of ~70 full-time roles per metro area + Remote USA filter, pre-screening is quick but worthwhile.
 
 **Exclude role types:** Internship, Fellowship, Part-time, Other
 

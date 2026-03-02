@@ -2,7 +2,7 @@
 
 **Board #:** 1 & 2
 **URL:** `https://climatebase.org/jobs`
-**Last run:** 2026-02-22
+**Last run:** Never
 **Auth required:** No
 **Scraping method:** Puppeteer JS — scroll-based lazy load + CSS class extraction
 
@@ -18,9 +18,9 @@ The primary climate-focused job board. Aggregates roles from climate companies w
 
 Location filter is applied via UI (react-select input), not URL parameter. After setting location, apply workplace type via the sidebar checkboxes.
 
-Relevant URL parameters (partial — location and workplace must be set via UI):
+Relevant URL parameters (partial — location and workplace must be set via UI). Example using a city/state location:
 ```
-https://climatebase.org/jobs?location=Boston%2C+Massachusetts%2C+USA&remote=false
+https://climatebase.org/jobs?location=[City%2C+State%2C+Country]&remote=false
 ```
 
 **⚠️ `remote=false` is unreliable** after applying a location filter via UI. Always manually verify the Hybrid and In-person checkboxes are set in the Workplace Preference sidebar.
@@ -74,14 +74,15 @@ Array.from(document.querySelectorAll('button'))
   .find(b => b.textContent.trim() === 'Reject')?.click();
 ```
 
-**2. Location filter** — the input is a react-select field with id `locationNew-desktop`:
+**2. Location filter** — the input is a react-select field with id `locationNew-desktop`. Replace `[YOUR_CITY]` with the city from `QUICK_REFERENCE_PATH → Default search location`:
 ```javascript
-document.querySelector('#locationNew-desktop').value = 'Boston';
+// Replace [YOUR_CITY] with the city from QUICK_REFERENCE_PATH → Default search location
+document.querySelector('#locationNew-desktop').value = '[YOUR_CITY]';
 document.querySelector('#locationNew-desktop')
   .dispatchEvent(new Event('input', { bubbles: true }));
-// Wait ~1s, then click the Boston dropdown option:
+// Wait ~1s, then click the matching city in the dropdown:
 Array.from(document.querySelectorAll('[class*="option"]'))
-  .find(o => o.textContent.includes('Boston'))?.click();
+  .find(o => o.textContent.includes('[YOUR_CITY]'))?.click();
 ```
 
 **3. Job alert modal** — appears after location filter is applied. Dismiss before proceeding.

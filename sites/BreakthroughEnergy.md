@@ -4,7 +4,7 @@
 **URLs:**
 - BEV: `https://bevjobs.breakthroughenergy.org/jobs`
 - BEF: `https://befjobs.breakthroughenergy.org/jobs`
-**Last run:** 2026-02-23
+**Last run:** Never
 **Auth required:** No
 **Scraping method:** Puppeteer JS — Getro Next.js SPA; UI filter clicks required
 

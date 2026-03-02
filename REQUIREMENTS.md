@@ -52,8 +52,6 @@ FitFoundry requirements vary by job board. Boards not listed in the table below 
 | Board | Scraping Method | Additional Requirement |
 |---|---|---|
 | Climatebase | Puppeteer MCP server | None |
-| Greentown Labs | Puppeteer MCP server | None |
-| The Engine | Puppeteer MCP server | None |
 | Y Combinator | Puppeteer MCP server | None |
 | BEV Jobs (Breakthrough Energy) | Puppeteer MCP server | None |
 | BEF Jobs (Breakthrough Energy) | Puppeteer MCP server | None |

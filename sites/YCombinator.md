@@ -2,7 +2,7 @@
 
 **Board #:** 10
 **URL:** `https://www.workatastartup.com/jobs?industry=Climatetech&industry=ArtificialIntelligence&jobType=fulltime&role=operations&role=product-manager`
-**Last run:** 2026-02-22
+**Last run:** Never
 **Auth required:** No
 **Scraping method:** Puppeteer JS — server-rendered Next.js, direct page extraction
 

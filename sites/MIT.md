@@ -3,7 +3,7 @@
 **Board #:** 16
 **URL:** `https://careers.peopleclick.com/careerscp/client_mit/external/search/search.html`
 **Entry point:** `https://hr.mit.edu/jobs/search` → redirects to external candidate portal above
-**Last run:** 2026-03-01
+**Last run:** Never
 **Auth required:** No (external candidate search is public)
 **Scraping method:** Puppeteer JS
 
@@ -11,7 +11,7 @@
 
 ## Overview
 
-MIT's external job board uses PeopleClick (iCIMS legacy platform) at `careers.peopleclick.com`. The portal lists all open positions across all MIT departments and schools. Signal quality for technical PM, R&D, and engineering roles is good when MIT is in a normal hiring cycle — during the current hiring pause (announced early 2026), postings skew heavily toward research/lab, healthcare, finance, and administration. MIT is a priority company in Jonathan's profile.
+MIT's external job board uses PeopleClick (iCIMS legacy platform) at `careers.peopleclick.com`. The portal lists all open positions across all MIT departments and schools. Signal quality for technical PM, R&D, and engineering roles is good when MIT is in a normal hiring cycle — during the current hiring pause (announced early 2026), postings skew heavily toward research/lab, healthcare, finance, and administration.
 
 **Important context (as of Mar 2026):** MIT has paused hiring for most non-essential positions. Currently posted roles are ones MIT is actively seeking to fill. Re-run after the pause lifts for better coverage of technical and program management roles.
 
@@ -54,7 +54,7 @@ Wait ~1 second for content to re-render before extracting.
 - Description and requirements: free text below "Posting Description" heading
 - Posted date: appears at end of requirements block (format: M/D/YYYY)
 
-**Pay range:** MIT publishes explicit min/max ranges on every posting. Use these for salary pre-screening before reading full descriptions — several roles can be eliminated immediately if the max is below the $100K floor.
+**Pay range:** MIT publishes explicit min/max ranges on every posting. Use these for salary pre-screening before reading full descriptions — roles where the posted max falls below the candidate's salary floor (from their profile) can be eliminated without reading the full description.
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Board #:** 13
 **URL:** `https://careers.formlabs.com/`
-**Last run:** 2026-02-25
+**Last run:** Never
 **Auth required:** No
 **Scraping method:** Puppeteer JS — native `<select>` filter + React Table extraction
 
