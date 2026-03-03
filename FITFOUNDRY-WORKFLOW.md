@@ -185,18 +185,11 @@ STEP GHOST — GHOST JOB CHECK
 
 For each individual job file created, attempt to verify the posting on the company's own career site.
 
-How to find the company's ATS:
+How to find and query the company's ATS:
 1. Visit the company's website and look for a Careers or Jobs link.
-2. Check the subdomain to identify the ATS:
-   - *.wd5.myworkdayjobs.com or *.wd1.myworkdayjobs.com → Workday
-   - jobs.lever.co/* → Lever
-   - boards.greenhouse.io/* → Greenhouse
-   - jobs.ashbyhq.com/* → Ashby
-3. Workday: use the undocumented CXS POST API — POST to /wday/cxs/[company-slug]/[board-slug]/jobs with { "searchText": "[job title]", "limit": 20, "offset": 0, "appliedFacets": {}, "returnFacets": false }. See Improvement Log below for working examples.
-4. Lever: navigate to jobs.lever.co/[company-slug] and search page text for the job title.
-5. Greenhouse: query https://boards-api.greenhouse.io/v1/boards/[company-slug]/jobs?content=false and filter by title.
-6. Use Puppeteer for all career site navigation — the VM egress proxy blocks most career sites, but Puppeteer bypasses it.
-7. If the career site is blocked even by Puppeteer (e.g., Cloudflare), use Claude in Chrome as a fallback if the extension is connected.
+2. Identify the ATS platform from the URL pattern and query it using the approach documented in `JOB-BOARD-SITE-NOTES.md` → **ATS Identification Tip** (covers Workday CXS API, Lever, Greenhouse, Ashby, and others).
+3. Use Puppeteer for all career site navigation — the VM egress proxy blocks most career sites, but Puppeteer bypasses it.
+4. If the career site is blocked even by Puppeteer (e.g., Cloudflare-protected pages), use Claude in Chrome as a fallback if the extension is connected.
 
 For MCP connector boards: skip this step for postings flagged as staffing firm listings — the ATS is the staffing firm's, not the employer's.
 
@@ -295,17 +288,9 @@ Filename: OUTPUT_FOLDER/[Company]_[JobTitle]_[YYYY-MM-DD].md
 
 ### Ghost Job Check — ATS Patterns Reference
 
-Workday, Lever, and Greenhouse are the most common ATS platforms you will encounter. Verified patterns for each:
+See `JOB-BOARD-SITE-NOTES.md` → **ATS Identification Tip** for the authoritative ATS patterns reference (Workday CXS API, Lever, Greenhouse, and the full URL pattern table). That section is the single source of truth for ATS detection and query patterns.
 
-**Workday** — CXS POST API works without authentication. POST to `/wday/cxs/[company-slug]/[board-slug]/jobs` with `{ searchText: "[job title]", limit: 20, offset: 0, appliedFacets: {}, returnFacets: false }`. Board slugs vary by company — inspect the Workday URL when navigating the company's careers page to find the tenant ID and board slug. Example: a company on `*.wd1.myworkdayjobs.com` vs `*.wd5.myworkdayjobs.com` — both use the same CXS API pattern, just different subdomains.
-
-**Lever** — Navigate to `jobs.lever.co/[company-slug]` directly and search page text for the job title. Note: some companies list on Lever but also have a stale Greenhouse board — check both if the first returns zero results.
-
-**Greenhouse** — Query `https://boards-api.greenhouse.io/v1/boards/[company-slug]/jobs?content=false` and filter results by title.
-
-**ATS discovery tip:** If you don't know which ATS a company uses, navigate to their careers page and check where the "Apply" or job listing links point. The subdomain almost always identifies the platform.
-
-**Egress proxy limitation:** Career sites (`jobs.lever.co`, company career pages, etc.) are typically blocked by the VM's network egress proxy. Always use Puppeteer — not Bash, curl, WebFetch, or Python requests — for career site navigation. Puppeteer bypasses the proxy.
+**Egress proxy reminder:** Career sites are typically blocked by the VM's network egress proxy. Always use Puppeteer for career site navigation. If Puppeteer is also blocked (e.g., Cloudflare-protected pages), fall back to Claude in Chrome if the extension is connected.
 
 ---
 

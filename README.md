@@ -71,7 +71,7 @@ Detailed scraping notes, selector patterns, filter quirks, and known ATS compati
 
 ## Ghost Job Check
 
-After scoring jobs, FitFoundry attempts to verify each posting on the company's own career site to catch ghost jobs — listings left up after a role has been filled or cancelled.
+After scoring jobs, FitFoundry attempts to verify each posting on the company's own career site to catch ghost jobs — listings left up after a role has been filled or cancelled. Verification uses Puppeteer for most career sites; for sites that block unauthenticated access (e.g., Cloudflare-protected pages), Claude in Chrome is used as a fallback if the extension is connected.
 
 | Status | Meaning |
 |--------|---------|

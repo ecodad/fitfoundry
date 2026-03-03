@@ -92,24 +92,9 @@ LaunchKit generates tailored resumes and cover letters for jobs selected from Fi
 
 ---
 
-## First-Time Setup Checklist
+## First-Time Setup
 
-Complete these steps before running ProfileBuilder for the first time.
-
-1. Install the Cowork desktop app.
-2. Install Node.js from [nodejs.org](https://nodejs.org) if not already present (required for Puppeteer).
-3. Add the Puppeteer MCP server — tell Cowork you want to install it and it will guide you through the process (see Puppeteer Setup above).
-4. Copy the FitFoundry files to a local folder on your computer.
-5. Open Cowork and select that folder as your workspace.
-6. Copy `.env.example` to `.env` and set `PROFILE_PATH`, `QUICK_REFERENCE_PATH`, and `OUTPUT_FOLDER`.
-7. If you plan to use LinkedIn or Wellfound: install the Claude in Chrome extension and log into both services in Chrome.
-8. If you plan to use Indeed or Dice: connect the relevant MCP connectors in Cowork settings.
-9. If you plan to use 80,000 Hours: retrieve Algolia credentials from DevTools (see `SETUP.md`) and add them to `.env`.
-10. Run **ProfileBuilder** (`PROFILEBUILDER.md`) to generate your profile and quick reference.
-11. Open `QUICK-REFERENCE.md` and fill in the board-specific search settings for each board you plan to use.
-12. Place your base resume(s) and cover letter(s) (`.docx` or `.pdf`) in the workspace folder.
-13. Run **FitFoundry** (`FITFOUNDRY-WORKFLOW.md`) to start searching job boards.
-14. Review results in `OUTPUT_FOLDER`, then run **LaunchKit** (`LAUNCHKIT.md`) for the jobs you want to pursue.
+For step-by-step setup instructions, see [SETUP.md](references/SETUP.md). The automated setup workflow is in [SETUP-WORKFLOW.md](references/SETUP-WORKFLOW.md) — trigger it by typing "Set up FitFoundry — Session 1" in Cowork.
 
 ---
 

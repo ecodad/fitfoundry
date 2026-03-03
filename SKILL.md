@@ -1,421 +1,143 @@
 ---
 name: fitfoundry
 description: >
-  FitFoundry is an AI-assisted job search workflow. Use this skill whenever
-  the user wants to find jobs, search job boards, score listings against their
-  profile, set up their job search workspace, run ProfileBuilder to create a
-  career profile, generate tailored resumes or cover letters, or do anything
-  related to a job search. Trigger on phrases like: find me a job, search for
-  jobs, set up job search, run FitFoundry, job board, career profile, score
-  jobs, ghost job check, Indeed search, Dice search, Climatebase,
-  80000 Hours, Breakthrough Energy, LaunchKit, tailored resume, cover letter
-  for a job, or any mention of FitFoundry.
+  FitFoundry is an AI-assisted job search workflow for Cowork. Use this skill whenever the user wants to search for jobs, run a job board scrape, review job listings, score postings against their profile, check for ghost jobs, or set up their job search workspace. Trigger whenever the user mentions: job search, job board, run FitFoundry, review listings, score jobs, ghost job check, Climatebase, 80000 Hours, Wellfound, Breakthrough Energy, YCombinator jobs, Draper jobs, Formlabs jobs, Indeed search, Dice search, or setting up a job search workflow. Also trigger if the user pastes or references FITFOUNDRY-WORKFLOW.md or JOB-BOARD-WORKFLOW.md.
 ---
 
 # FitFoundry — AI-Assisted Job Search
 
-FitFoundry is a three-stage job search system that runs inside Cowork:
+FitFoundry is a three-stage workflow for finding and applying to jobs:
 
-- **Stage 1 — ProfileBuilder:** A guided interview that builds your career profile. Accepts resumes and cover letters to pre-fill answers. Produces `MY-PROFILE.md` and `QUICK-REFERENCE.md`.
-- **Stage 2 — FitFoundry:** Searches job boards, scores each listing against your profile (1–10), verifies postings aren't ghost jobs, and saves structured results.
-- **Stage 3 — LaunchKit:** Takes your scored results and generates tailored resumes and cover letters for each job you want to pursue.
+- **Stage 1 — ProfileBuilder:** Interviews the user and generates a career profile (`MY-PROFILE.md`) and search settings (`QUICK-REFERENCE.md`). Run once before the first search, and re-run any time priorities change.
+- **Stage 2 — FitFoundry:** Scrapes job boards, filters and scores listings against the profile, verifies postings are real (ghost job check), and saves structured output. Run as often as needed.
+- **Stage 3 — LaunchKit:** Takes scored job reports from Stage 2 and generates a tailored resume and cover letter (`.docx`) for each selected role.
 
-This skill handles setup automatically. It checks what's already in place, fills in anything missing, and gets you to searching as quickly as possible.
-
----
-
-## WORKFLOW PROMPT
-
-```
-Today's date is [AUTO-FILL FROM SYSTEM].
-
-Read this file in full before taking any action. Then follow the steps below in order.
+Full system requirements are in `REQUIREMENTS.md`. Setup instructions are in `SETUP.md`. Quick-reference prompts are in `QUICKSTART.md`.
 
 ---
 
-STEP 0 — STATUS CHECK
+## First-Time Setup
 
-Check the current workspace for the following. Report the status of each item
-clearly before proceeding. Use ✅ for ready and ⚠️ for missing or incomplete.
+Setup takes two sessions with a Claude Desktop restart between them.
 
-1. FitFoundry workspace files
-   → Check whether FITFOUNDRY-WORKFLOW.md exists in the workspace.
-   → If it exists, all workspace files are assumed present. Mark ✅.
-   → If it does not exist, mark ⚠️ WORKSPACE FILES MISSING.
+**Session 1** copies workflow files to the workspace, installs the Puppeteer MCP server, and connects job board accounts (Indeed, Dice, and optionally Claude in Chrome for LinkedIn and Wellfound). Ends with a required restart.
 
-2. Career profile
-   → Read MY-PROFILE.md (if it exists).
-   → If the file does not exist, or if it contains the placeholder text
-     "[Your Name]", mark ⚠️ PROFILE NOT SET UP.
-   → Otherwise mark ✅ PROFILE READY.
+**Session 2** verifies everything is active, then runs ProfileBuilder to create the career profile and search settings.
 
-3. Connectors
-   → Check whether the Indeed MCP tools (search_jobs, get_job_details) are
-     available in this session.
-   → If available, mark ✅ INDEED CONNECTOR ACTIVE.
-   → If not available, mark ⚠️ INDEED CONNECTOR NOT ACTIVE.
-   → Check whether Dice MCP tools are available.
-   → If available, mark ✅ DICE CONNECTOR ACTIVE.
-   → If not available, mark ⚠️ DICE CONNECTOR NOT ACTIVE.
-   → Check whether Puppeteer tools (puppeteer_navigate, puppeteer_evaluate)
-     are available.
-   → If available, mark ✅ PUPPETEER ACTIVE.
-   → If not available, mark ⚠️ PUPPETEER NOT ACTIVE (secondary boards unavailable).
+Full instructions for both sessions are in `SETUP-WORKFLOW.md`.
 
-Print the full status summary to the user. Then route:
-- If ⚠️ WORKSPACE FILES MISSING → go to STEP 1.
-- Else if ⚠️ PROFILE NOT SET UP → go to STEP 2.
-- Else if both ⚠️ INDEED and ⚠️ DICE CONNECTOR NOT ACTIVE → go to STEP 3.
-- Else → go to STEP 4 (ready to search).
+**When a user says "Set up FitFoundry — Session 1":**
+Read `SETUP-WORKFLOW.md` and follow the SESSION 1 instructions exactly.
 
-If the user already told you what they want to do (e.g. "run Indeed") and the
-relevant components are ready, skip ahead to STEP 4 directly.
+**When a user says "Set up FitFoundry — Session 2":**
+Read `SETUP-WORKFLOW.md` and follow the SESSION 2 instructions exactly.
+
+Do not attempt to download any files from GitHub or the internet during setup. All files needed for bootstrap are already in the skill directory.
 
 ---
 
-STEP 1 — BOOTSTRAP WORKSPACE FILES
+## Stage 1 — Running ProfileBuilder
 
-Only run this step if FITFOUNDRY-WORKFLOW.md was not found in the workspace.
+**When a user says "Run ProfileBuilder" or wants to update their profile:**
 
-Tell the user:
-
-  "Your workspace doesn't have the FitFoundry files yet. I can download them
-   from GitHub and set everything up automatically. This takes about 30 seconds
-   and only happens once.
-
-   After setup, your workspace will contain all the workflow files, a template
-   profile to fill in, and a results folder for your job search output.
-
-   Ready to set up? (yes / no)"
-
-Wait for confirmation before proceeding.
-
-Once confirmed, download each file below from GitHub using WebFetch.
-Base URL: https://raw.githubusercontent.com/ecodad/fit_foundry/main/
-
-Files to download and write to the workspace root:
-- FITFOUNDRY-WORKFLOW.md
-- PROFILEBUILDER.md
-- CAREER-PROFILE-INTERVIEW.md
-- JOB-BOARD-SITE-NOTES.md
-- LAUNCHKIT.md
-- REQUIREMENTS.md
-- SETUP.md
-- README.md
-- .env.example
-- MY-PROFILE.md
-- QUICK-REFERENCE.md
-
-Files to download and write to sites/ subfolder:
-- sites/Indeed.md
-- sites/Dice.md
-- sites/Climatebase.md
-- sites/80kHours.md
-- sites/BreakthroughEnergy.md
-- sites/YCombinator.md
-- sites/WorkOnClimate.md
-- sites/Draper.md
-- sites/Formlabs.md
-- sites/Wellfound.md
-
-Rules for downloading:
-- Skip any file that already exists in the workspace — never overwrite.
-- If a download fails, note the filename and continue. Report all failures at
-  the end.
-- FITFOUNDRY-WORKFLOW.md, PROFILEBUILDER.md, CAREER-PROFILE-INTERVIEW.md,
-  and JOB-BOARD-SITE-NOTES.md are required. If any of these fail, stop and
-  tell the user.
-
-After downloading:
-- Create the results/ directory if it doesn't exist (use Bash: mkdir -p results).
-- Write a .env file with these default values if .env does not already exist:
-
-  PROFILE_PATH=./MY-PROFILE.md
-  QUICK_REFERENCE_PATH=./QUICK-REFERENCE.md
-  OUTPUT_FOLDER=./results/
-  ALGOLIA_APP_ID=
-  ALGOLIA_API_KEY=
-  ALGOLIA_INDEX=jobs_prod
-
-Tell the user:
-
-  "✅ Setup complete. Your workspace is ready.
-
-   [List what was downloaded. Note any files that were skipped or failed.]
-
-   Next: I'll help you set up your career profile."
-
-Then continue to STEP 2.
+Read `PROFILEBUILDER.md` from the workspace and execute it from STEP 0 through STEP 6. ProfileBuilder reads `CAREER-PROFILE-INTERVIEW.md` for the question set and writes `MY-PROFILE.md` and `QUICK-REFERENCE.md` on completion.
 
 ---
 
-STEP 2 — PROFILE SETUP
+## Stage 2 — Running a Job Search
 
-Only run this step if MY-PROFILE.md is missing or still contains "[Your Name]".
+**When a user says "Run a FitFoundry job search" (or similar):**
 
-Tell the user:
+1. Read `.env` from the workspace to get `PROFILE_PATH`, `QUICK_REFERENCE_PATH`, and `OUTPUT_FOLDER`.
+2. **Pre-flight connector check.** Before loading any workflow files, verify tool availability and report status to the user:
+   - Check for `puppeteer_navigate` (Puppeteer MCP server)
+   - Check for Indeed MCP tools (`search_jobs` from the Indeed connector)
+   - Check for Dice MCP tools (`search_jobs` from the Dice connector)
+   - Check for Claude in Chrome (`tabs_context_mcp` or similar)
 
-  "Before searching for jobs, FitFoundry needs to know about you — your skills,
-   experience, and what you're looking for. I'll ask you a series of questions
-   and build your profile automatically.
+   Report a short status line, e.g.: "Tools active: Puppeteer ✅ | Indeed ✅ | Dice ❌ | Chrome ❌"
 
-   If you have a resume or cover letter, you can share the file path or upload
-   it now. I'll use it to pre-fill what I can and skip questions I can already
-   answer.
+   If Puppeteer is missing, warn the user that most boards will not work and offer to help install it. If a connector is missing, note which boards are affected but continue — the user may not need that board this session.
+3. Read the career profile from `PROFILE_PATH`. Hold in context for the full session.
+4. Read the quick reference from `QUICK_REFERENCE_PATH`. Hold in context — it contains scoring calibration and board-specific search settings.
+5. Read `JOB-BOARD-SITE-NOTES.md` from the workspace. Hold in context.
+6. Read `FITFOUNDRY-WORKFLOW.md` and execute it from STEP 0.
 
-   Two options for the interview:
-   • Quick setup (~5 min) — covers the essentials. Gets you searching fast.
-   • Full setup (~40 min) — includes resume review + thorough interview.
-     Produces better job scoring, especially for culture-fit roles.
-
-   Do you have a resume or cover letters to provide? And which interview
-   would you prefer — Quick or Full?"
-
-Wait for the user's answer.
-
-If the user provides a resume or cover letter path:
-- Read each file in full.
-- Extract: job titles, companies, tenure, skills, education, location,
-  any stated objective or summary.
-- Hold extracted content in context. Do not generate the profile yet.
-
-Then read CAREER-PROFILE-INTERVIEW.md and hold the full question set in context.
-
-Set MODE = Quick or Full based on the user's choice.
-
-Work through the question set for the selected MODE:
-- Ask one topic block at a time (not one question at a time).
-- If resume content clearly answers a question, state the inference and ask
-  the user to confirm or correct — do not ask the question from scratch.
-- If the resume partially answers something, use it as a starting point and
-  ask only for what's missing.
-- Every question either gets answered by resume inference + confirmation,
-  or by asking the user directly. Do not skip questions.
-
-After the final question block, say:
-  "That's everything I need. Give me a moment to put your profile together."
-
-Present a compact summary of all inferred and stated answers organized by
-section. Flag any that feel uncertain. Ask:
-  "Does this look right? Correct anything before I generate your files."
-
-Wait for confirmation. Then:
-- Write MY-PROFILE.md using the structure defined in PROFILEBUILDER.md
-  (STEP 4 — GENERATE MY-PROFILE.md).
-- Write QUICK-REFERENCE.md using the structure defined in PROFILEBUILDER.md
-  (STEP 5 — GENERATE QUICK-REFERENCE.md).
-
-Tell the user:
-
-  "✅ Your profile is ready.
-
-   One thing to do before searching: open QUICK-REFERENCE.md and fill in the
-   Board-Specific Search Settings section — the keywords to use on each board.
-   These can't be inferred from the interview, so they need to be set manually.
-   You can do this now or after your first search.
-
-   Next: I'll check your connectors."
-
-Then continue to STEP 3.
+The workflow will ask which board to run and what run type (Remote / Hybrid / In-Person / All), then scrape → filter → score → ghost job check → save results.
 
 ---
 
-STEP 3 — CONNECTOR SETUP
+## Stage 3 — Running LaunchKit
 
-Only run this step for connectors that were marked ⚠️ in the status check.
+**When a user says "Run LaunchKit" or wants to generate application materials:**
 
-Explain what connectors are, in plain English:
+Read `LAUNCHKIT.md` from the workspace and execute it from STEP 0. LaunchKit reads the career profile and scored job report files from `OUTPUT_FOLDER`, then generates a tailored resume and cover letter (`.docx`) for each selected job.
 
-  "Connectors are pre-built integrations that let FitFoundry access job boards
-   officially — using the board's own API rather than scraping. Indeed and Dice
-   both have official connectors for Cowork.
-
-   I'll walk you through adding the ones you need. Each one takes about
-   2 minutes to set up."
-
---- Indeed ---
-
-If Indeed is not active:
-
-  "Indeed is the largest US job board and FitFoundry's primary board.
-
-   To add the Indeed connector:
-   1. Open Cowork Settings (gear icon, top right of the app)
-   2. Click 'Connected Services' or 'Integrations'
-   3. Find 'Indeed' in the list and click Connect
-   4. Sign into your Indeed account when prompted
-
-   ⚠️ IMPORTANT: After connecting, you must start a NEW Cowork session.
-   Connectors don't activate until the session is restarted. When you open
-   a new session, just ask FitFoundry to start — it will pick up from here.
-
-   Let me know when you've connected Indeed, or if you'd like to skip it
-   and proceed with other boards."
-
-Wait for the user to confirm they've connected Indeed or chosen to skip.
-
---- Dice ---
-
-If Dice is not active:
-
-  "Dice is a tech-focused job board — good for engineering and technical roles.
-
-   To add the Dice connector:
-   1. Open Cowork Settings (gear icon, top right)
-   2. Click 'Connected Services' or 'Integrations'
-   3. Find 'Dice' in the list and click Connect
-   4. Sign into your Dice account when prompted
-
-   ⚠️ IMPORTANT: Same as above — you'll need a new Cowork session after
-   connecting for it to activate.
-
-   Let me know when you've connected Dice, or if you'd like to skip it."
-
-Wait for the user to confirm or skip.
-
---- Puppeteer (secondary boards) ---
-
-If Puppeteer is not active and the user wants to use Climatebase, 80,000 Hours,
-Breakthrough Energy, Y Combinator, The Engine, Draper, or Formlabs:
-
-  "The secondary job boards (Climatebase, 80,000 Hours, etc.) use a browser
-   automation tool called Puppeteer. It runs in the background — you won't see
-   a browser window — and lets FitFoundry navigate those sites automatically.
-
-   Puppeteer requires Node.js on your computer.
-
-   Do you have Node.js installed? You can check by opening a terminal and
-   typing: node --version
-
-   If you're not sure, say no and I'll help you check."
-
-If the user confirms Node.js is present (or after helping them verify):
-
-  "To add Puppeteer:
-   1. Open Cowork Settings → MCP Servers
-   2. Click 'Add Server'
-   3. In the command field, enter exactly:
-      npx -y @modelcontextprotocol/server-puppeteer
-   4. Click Save
-
-   ⚠️ New session required after adding, same as the connectors above."
-
---- After connector setup ---
-
-If the user has connected one or more items and needs to restart:
-
-  "You're all set. Start a new Cowork session, then come back to FitFoundry.
-   I'll detect your new connectors automatically and take you straight to
-   the job board menu."
-
-If all needed connectors are now active (or the user chose to proceed with
-what's available):
-
-  "✅ Connectors ready. Let's start searching."
-
-Continue to STEP 4.
+Requires the `docx` Cowork skill. Requires base resume and cover letter files (`.docx` or `.pdf`) to be present in the workspace.
 
 ---
 
-STEP 4 — SEARCH
+## Supported Job Boards (Stage 2)
 
-Read FITFOUNDRY-WORKFLOW.md and hold it in context. It contains the complete
-workflow for running a job board search.
-
-Present the board menu:
-
----
-
-**Which board would you like to search?**
-
-**Primary (recommended — official connectors, no ToS concerns):**
-1. Indeed — largest US job board; best for broad searches
-2. Dice — tech-focused; good for engineering and technical roles
-
-**Secondary (mission-driven and specialized; requires Puppeteer):**
-3. Climatebase — climate and sustainability jobs
-4. 80,000 Hours — high-impact careers; curated, lower volume
-5. Breakthrough Energy (BEV Jobs) — energy transition; ~767 listings
-6. Breakthrough Energy (BEF Jobs) — energy transition; ~77 listings
-7. Y Combinator — startup jobs from YC-backed companies
-8. Draper Laboratory — local research institution (note: most roles require clearance)
-9. Formlabs — direct company board (example of single-company search)
-
-**⚠️ Caution (Terms of Service concerns — use at your own discretion):**
-10. LinkedIn — requires Claude in Chrome + active login; automated scraping may violate ToS
-11. Wellfound — requires Claude in Chrome + active login; automated scraping may violate ToS
-
-**Other:**
-- Say "new board" to add a board not on this list
+| Board | Auth | Method | Site File |
+|-------|------|--------|-----------|
+| Climatebase | None | Puppeteer | `sites/Climatebase.md` |
+| 80,000 Hours | None | Puppeteer + Algolia API | `sites/80kHours.md` |
+| Draper Laboratory | None | Workday CXS API | `sites/Draper.md` |
+| LinkedIn | LinkedIn login | Claude in Chrome | `sites/LinkedIn.md` |
+| Wellfound | Wellfound login | Claude in Chrome | `sites/Wellfound.md` |
+| Y Combinator | None | Puppeteer | `sites/YCombinator.md` |
+| BEV Jobs (Breakthrough Energy) | None | Puppeteer | `sites/BreakthroughEnergy.md` |
+| BEF Jobs (Breakthrough Energy) | None | Puppeteer | `sites/BreakthroughEnergy.md` |
+| Formlabs | None | Puppeteer | `sites/Formlabs.md` |
+| Indeed | Indeed account (MCP) | Indeed MCP connector | `sites/Indeed.md` |
+| Dice | Dice account (MCP) | Dice MCP + Puppeteer | `sites/Dice.md` |
+| Work on Climate | Slack membership | Manual only | `sites/WorkOnClimate.md` |
 
 ---
 
-Also ask:
-- What work type? Remote / Hybrid / In-Person / All
-- Any label to add to the output filename? (e.g., "Remote", "Climate") —
-  suggest a default based on the board and work type.
+## Key Files
 
-Wait for the user's selections, then proceed with FITFOUNDRY-WORKFLOW.md
-from STEP 1 (SCRAPE THE JOB BOARD), using the selected board's site file
-from sites/[BoardName].md.
-
-If the user selects a Caution board, acknowledge the choice and add:
-  "Just to confirm — you're choosing to run [LinkedIn/Wellfound]. I'll proceed,
-   but note that automated use of this board may conflict with their Terms of
-   Service. Continuing on your instruction."
-
-If the user selects "new board":
-  "What's the URL of the board you'd like to add? I'll navigate to it, figure
-   out how it's structured, and create a site file so it can be used in future
-   sessions too."
-
----
-
-STEP 5 — LAUNCHKIT (application materials)
-
-If the user asks to generate a resume or cover letter for a specific job,
-or to process results from a completed FitFoundry run:
-
-Read LAUNCHKIT.md and follow the workflow there.
-
-LaunchKit scans your results/ folder, presents scored jobs as a numbered list,
-and generates tailored .docx resumes and cover letters for each job you select.
-
-You will need:
-- At least one base resume (.docx or .pdf) in the workspace
-- At least one base cover letter (.docx or .pdf) in the workspace
-- Completed FitFoundry results in results/ from a previous Stage 2 run
-```
+| File | Stage | Purpose |
+|------|-------|---------|
+| `SETUP-WORKFLOW.md` | Setup | Agent instructions for Session 1 and Session 2 |
+| `QUICKSTART.md` | All | Copy-paste prompts and troubleshooting |
+| `REQUIREMENTS.md` | Reference | Full system requirements for all three stages |
+| `SETUP.md` | Reference | Human-readable setup guide |
+| `PROFILEBUILDER.md` | 1 | ProfileBuilder workflow prompt |
+| `CAREER-PROFILE-INTERVIEW.md` | 1 | Interview question bank used by ProfileBuilder |
+| `MY-PROFILE.md` | 1, 2, 3 | Generated career profile — source of truth |
+| `QUICK-REFERENCE.md` | 1, 2 | Scoring calibration and board-specific search settings |
+| `FITFOUNDRY-WORKFLOW.md` | 2 | Job search workflow prompt |
+| `JOB-BOARD-SITE-NOTES.md` | 2 | Per-board scraping notes and board index |
+| `sites/[BoardName].md` | 2 | Individual board configuration — loaded at runtime |
+| `LAUNCHKIT.md` | 3 | Application asset generator workflow prompt |
 
 ---
 
 ## Adding a New Board
 
-To contribute a new board to FitFoundry:
-
-1. Create a new file at `sites/[BoardName].md` using the standard format
-   from `JOB-BOARD-SITE-NOTES.md` (Site File Format section).
-2. Add a row to the appropriate section of the Known Boards table in
-   `JOB-BOARD-SITE-NOTES.md`.
-3. Record any lessons learned in the Improvement Log in `FITFOUNDRY-WORKFLOW.md`.
-4. Submit a pull request to the GitHub repo.
-
-The modular site-file architecture means adding a board only requires those
-three files — no changes to the core workflow are needed.
+1. Run a job search session and select "new board" at the site selection step.
+2. Create a new file in `sites/` using the standard format from `JOB-BOARD-SITE-NOTES.md`.
+3. Add a row to the Known Boards table in `JOB-BOARD-SITE-NOTES.md`.
+4. Record lessons learned in the Improvement Log in `FITFOUNDRY-WORKFLOW.md`.
+5. Update `README.md` with the new board.
 
 ---
 
-## Notes for Contributors
+## Output Format (Stage 2)
 
-GitHub repo: **https://github.com/ecodad/fit_foundry**
+Results go to `OUTPUT_FOLDER` (set in `.env`):
 
-This SKILL.md is the single install file for Cowork. Place it at:
-`~/.config/cowork/skills/fitfoundry/SKILL.md` (or wherever your Cowork
-installation stores skills).
+- **Master list:** `YYYY-MM-DD-BoardName.md` — table of all listings + session summary
+- **Individual files:** `Company_JobTitle_YYYY-MM-DD.md` — score, rationale, ghost job status, full job description
 
-On first run it downloads the full FitFoundry directory structure from the
-repo above. If you have already cloned the repo into your workspace, the
-bootstrap step will detect the existing files and skip them.
+Scoring thresholds (adjustable in `QUICK-REFERENCE.md`):
 
-Pull requests for new boards, improved site files, and workflow enhancements
-are welcome.
+| Score | Meaning | Output |
+|-------|---------|--------|
+| 9–10 | Dream job | Individual file |
+| 7–8 | Strong fit | Individual file |
+| 6 | Partial fit — one gap | Individual file |
+| 5 | Multiple gaps | Master list only |
+| ≤ 4 | Poor fit | Skip |
