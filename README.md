@@ -40,6 +40,18 @@ An AI-assisted job search system designed to run inside [Cowork](https://www.ant
 
 ---
 
+### Updating an Existing Install
+
+If you already have FitFoundry set up and want to apply a new release, use the delta package rather than reinstalling from scratch. Delta packages preserve your personal run history and any boards you have added yourself.
+
+1. Download the latest ZIP from the **Releases** page and extract it, or clone/pull the repo.
+2. Open the `deltas/` folder and find the folder for the latest release date (e.g. `deltas/2026-03-18/`).
+3. Read `DELTA-APPLY.md` at the repo root — it contains step-by-step instructions for merging new and updated site files into your workspace without overwriting your run history.
+
+The short version: copy new site files straight in, replace updated site files but restore your own `Last run` date, and merge the board index table row by row. Full details are in `DELTA-APPLY.md`.
+
+---
+
 ### Setup — Two Steps
 
 Setup is split into two steps. Complete them in order.
@@ -114,19 +126,24 @@ If you provide a resume, ProfileBuilder pre-fills answers it can infer and only 
 
 | # | Board | URL | Notes |
 |---|-------|-----|-------|
-| 1 | Climatebase (Remote) | climatebase.org | React SPA; Algolia-backed; scrollable container approach |
+| 1 | Climatebase (Remote) | climatebase.org | React SPA; scroll-based extraction; detail pages require Claude in Chrome (Cloudflare-blocked) |
 | 2 | Climatebase (In-Person) | climatebase.org | Same board, Hybrid + In-person filter via UI |
-| 3 | 80,000 Hours | jobs.80000hours.org | Algolia API; high curation, low volume; creds in `.env` |
+| 3 | 80,000 Hours | jobs.80000hours.org | Algolia API; high curation, low volume |
 | 4 | Draper Laboratory | draper.wd5.myworkdayjobs.com | Workday CXS API; most roles require security clearance |
 | 5 | Work on Climate | workonclimate.org | Slack community + newsletter only — not scrapable |
 | 6 | Wellfound | wellfound.com/jobs | **Requires Claude in Chrome + login.** Cloudflare CAPTCHA blocks Puppeteer. |
 | 7 | Y Combinator | workatastartup.com | Server-rendered; no login required; industry filter unreliable |
-| 8 | BEV Jobs | bevjobs.breakthroughenergy.org | Getro; ~767 jobs; UI filters required (URL params → HTTP 500) |
-| 9 | BEF Jobs | befjobs.breakthroughenergy.org | Getro; ~77 jobs; small enough to review unfiltered |
-| 10 | Formlabs | careers.formlabs.com | Direct company site; React Table; native select filter; no auth |
+| 8 | BEV Jobs | bevjobs.breakthroughenergy.org | Getro; UI filters required (URL params → HTTP 500) |
+| 9 | BEF Jobs | befjobs.breakthroughenergy.org | Getro; small board, review unfiltered |
+| 10 | Formlabs | careers.formlabs.com | Direct company site; apply flow via Sensata Workday |
 | 11 | LinkedIn | linkedin.com/jobs | **Requires Claude in Chrome + login.** JS injection blocked — uses accessibility tree. |
 | 12 | Indeed | indeed.com | MCP connector — `search_jobs` + `get_job_details` + `get_company_data` |
 | 13 | Dice | dice.com | MCP connector for discovery + Puppeteer for full descriptions |
+| 14 | Harvard | careers.harvard.edu | SmartRecruiters public API — no auth required; UI broken, use API directly |
+| 15 | Autodesk | autodesk.wd1.myworkdayjobs.com | Workday CXS POST API; high global volume — filter by Boston/Remote |
+| 16 | Markforged | job-boards.greenhouse.io/markforged | Greenhouse public API; markforged.com unreachable via Puppeteer |
+| 17 | PTC | ptc.wd1.myworkdayjobs.com | Workday CXS POST API; Boston HQ |
+| 18 | Desktop Metal | desktopmetal.com | ⚠️ ON HOLD — domain parked as of 2026-03-17; company status unclear |
 
 Detailed scraping notes, selector patterns, filter quirks, and known ATS compatibility issues for each board are in `JOB-BOARD-SITE-NOTES.md`.
 
