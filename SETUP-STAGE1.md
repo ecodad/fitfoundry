@@ -1,6 +1,6 @@
 # FitFoundry Setup — Stage 1: Claude Desktop Configuration
 
-Before FitFoundry can run, Claude Desktop needs three things configured: the Puppeteer MCP server for browser automation, the Indeed and Dice job board connectors, and optionally the Claude in Chrome extension for LinkedIn and Wellfound.
+Before FitFoundry can run, Claude Desktop needs three things configured: the Puppeteer MCP server for browser automation, the Indeed and Dice job board connectors, and the Claude in Chrome extension for ghost job checks and Cloudflare-protected boards.
 
 This stage is done once, entirely in Claude Desktop settings. No Cowork session is needed yet.
 

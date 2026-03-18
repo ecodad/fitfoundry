@@ -10,33 +10,15 @@ An AI-assisted job search system designed to run inside [Cowork](https://www.ant
 
 1. Go to **github.com/ecodad/fitfoundry** in your browser.
 2. Click **Releases** on the right side of the page.
-3. Under the latest release, click **Assets** and download the `.zip` file.
+3. Under the latest release, click **Assets** and download the `fitfoundry.skill` file.
 
    > Do this in your browser — Claude Desktop cannot reach GitHub on your behalf.
 
-4. Extract the ZIP. You will get a folder called `fitfoundry-main` (or similar). Open it — you should see `README.md`, `SETUP-STAGE1.md`, `SETUP-STAGE2.md`, and a `skill/` subfolder.
-
-5. Find your Claude skills folder:
-   - **Windows:** `C:\Users\<YourName>\AppData\Roaming\Claude\skills\`
-   - **Mac:** `~/Library/Application Support/Claude/skills/`
-
-   The `AppData` folder on Windows is hidden. Paste the path directly into the File Explorer address bar and press Enter. Create the `skills` folder if it does not exist.
-
-6. Copy the `skill/` subfolder into the Claude skills folder and rename it from `skill` to `fitfoundry`. The result should look like this:
-
-   ```
-   Claude/
-   └── skills/
-       └── fitfoundry/
-           ├── SKILL.md
-           ├── FITFOUNDRY-WORKFLOW.md
-           ├── QUICKSTART.md
-           └── sites/
-   ```
-
-   The setup docs (`README.md`, `SETUP-STAGE1.md`, `SETUP-STAGE2.md`) stay in the `fitfoundry-main` folder — they are for you to read, not for Claude.
-
-7. Restart Claude Desktop.
+4. Open Claude Desktop and go to **Customize → Skills**.
+5. Click the **+** button next to Skills and select **Upload**.
+6. Select the `fitfoundry.skill` file you just downloaded.
+7. Make sure the FitFoundry skill is toggled **On**.
+8. Restart Claude Desktop.
 
 ---
 
@@ -58,7 +40,7 @@ Setup is split into two steps. Complete them in order.
 
 | Step | File | What it covers | Time |
 |---|---|---|---|
-| **Step 1** | [SETUP-STAGE1.md](SETUP-STAGE1.md) | Install Node.js, add Puppeteer MCP server, connect Indeed and Dice, install Claude in Chrome (optional) | 15–20 min |
+| **Step 1** | [SETUP-STAGE1.md](SETUP-STAGE1.md) | Install Node.js, add Puppeteer MCP server, connect Indeed and Dice, install Claude in Chrome | 15–20 min |
 | **Step 2** | [SETUP-STAGE2.md](SETUP-STAGE2.md) | Open Cowork, select your job search folder, run workspace bootstrap, build your career profile | 10–30 min |
 
 A restart of Claude Desktop is required at the end of Step 1, and again within Step 2 between the two Cowork sessions. Both restarts are one-time steps.
@@ -67,19 +49,18 @@ A restart of Claude Desktop is required at the end of Step 1, and again within S
 
 ### Running FitFoundry After Setup
 
-Open a new Cowork session, select your job search folder, and paste:
+Open a new Cowork session, select your job search folder, and tell Claude what you want to search. For example:
 
-> Run a FitFoundry job search
+> Use FitFoundry to search Indeed for jobs posted in the past 10 days
 
-See `QUICKSTART.md` for all prompts and a troubleshooting reference.
+> Use FitFoundry to search for jobs posted in the last two weeks at Microsoft
 
----
+> Use FitFoundry to find job openings in the Seattle area
 
-## Full Requirements
-
-For a complete breakdown of tools and connectors required by stage and board, see [REQUIREMENTS.md](REQUIREMENTS.md).
+See `QUICKSTART.md` in your job search folder for more prompts and a troubleshooting reference.
 
 ---
+
 
 ## Three-Stage Workflow
 
@@ -238,5 +219,4 @@ Prefix a folder with `_` to flag it as an active pursuit at a glance in your fil
 - Claude in Chrome browser extension — required for LinkedIn and Wellfound
 - Node.js — required for Puppeteer
 
-See [REQUIREMENTS.md](REQUIREMENTS.md) for the full breakdown by stage and board.
 See [SETUP-STAGE1.md](SETUP-STAGE1.md) and [SETUP-STAGE2.md](SETUP-STAGE2.md) for step-by-step setup instructions.
