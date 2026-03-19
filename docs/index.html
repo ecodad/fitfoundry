@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitFoundry — Forged Fit</title>
+  <meta name="description" content="FitFoundry is an open-source agentic job search tool that scores every listing against your profile. Answer three questions. Step back. Let the agent work." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #0C0C0C;
+      --surface:    #161616;
+      --surface2:   #1E1E1E;
+      --border:     #2A2A2A;
+      --amber:      #E07C24;
+      --ember:      #C45D10;
+      --text:       #F0EBE1;
+      --muted:      #8A8580;
+      --green:      #4CAF82;
+      --warn:       #F0A500;
+      --grey:       #6B6B6B;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 17px;
+      line-height: 1.65;
+    }
+
+    a { color: var(--amber); text-decoration: none; }
+    a:hover { color: var(--ember); }
+
+    /* ── NAV ───────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(12,12,12,0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+      height: 60px;
+    }
+    .nav-brand {
+      font-family: Georgia, serif;
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--text);
+    }
+    .nav-brand span { color: var(--amber); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a { color: var(--muted); font-size: 14px; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--amber);
+      color: #0C0C0C !important;
+      font-weight: 600;
+      padding: 8px 20px;
+      border-radius: 4px;
+      font-size: 14px !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--ember) !important; color: #0C0C0C !important; }
+
+    /* ── SECTIONS ──────────────────────────────────── */
+    section { padding: 100px 40px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--amber);
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    h2 {
+      font-family: Georgia, serif;
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .lead {
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 640px;
+      line-height: 1.7;
+    }
+
+    /* ── HERO ──────────────────────────────────────── */
+    #hero {
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: url('assets/images/FitFoundry-IndustrialTech.png') center/cover no-repeat;
+      filter: brightness(0.35);
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(12,12,12,0.6) 0%, rgba(12,12,12,0.2) 60%, rgba(12,12,12,0.7) 100%);
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 140px 40px 100px;
+    }
+    .hero-tag {
+      display: inline-block;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--amber);
+      font-weight: 600;
+      border: 1px solid var(--amber);
+      padding: 4px 12px;
+      border-radius: 2px;
+      margin-bottom: 28px;
+    }
+    h1 {
+      font-family: Georgia, serif;
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .hero-tagline {
+      font-family: Georgia, serif;
+      font-size: clamp(22px, 3vw, 34px);
+      color: var(--amber);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-bottom: 28px;
+    }
+    .hero-sub {
+      font-size: 19px;
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.7;
+      margin-bottom: 44px;
+    }
+    .btn-group { display: flex; gap: 16px; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--amber);
+      color: #0C0C0C;
+      font-weight: 700;
+      padding: 14px 32px;
+      border-radius: 4px;
+      font-size: 16px;
+      transition: background 0.2s;
+      display: inline-block;
+    }
+    .btn-primary:hover { background: var(--ember); color: #0C0C0C; }
+    .btn-secondary {
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-weight: 600;
+      padding: 14px 32px;
+      border-radius: 4px;
+      font-size: 16px;
+      transition: border-color 0.2s, color 0.2s;
+      display: inline-block;
+    }
+    .btn-secondary:hover { border-color: var(--amber); color: var(--amber); }
+
+    /* ── STATS ─────────────────────────────────────── */
+    #problem { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px;
+      margin-top: 56px;
+    }
+    .stat-card {
+      text-align: center;
+      padding: 32px 20px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface2);
+    }
+    .stat-number {
+      font-family: Georgia, serif;
+      font-size: clamp(44px, 5vw, 64px);
+      font-weight: 700;
+      color: var(--amber);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .stat-label {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .stat-sub {
+      font-size: 12px;
+      color: var(--grey);
+      margin-top: 6px;
+    }
+
+    /* ── VIDEO ─────────────────────────────────────── */
+    #demo { padding: 100px 40px; }
+    .video-wrapper {
+      margin-top: 44px;
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .video-placeholder {
+      text-align: center;
+      padding: 60px 40px;
+    }
+    .video-placeholder .play-icon {
+      width: 72px; height: 72px;
+      background: var(--amber);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+    }
+    .video-placeholder .play-icon::after {
+      content: '';
+      border-left: 26px solid #0C0C0C;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+      margin-left: 6px;
+    }
+    .video-placeholder p {
+      color: var(--muted);
+      font-size: 16px;
+    }
+    .video-placeholder strong { color: var(--text); }
+    /* Swap out the placeholder block for a real embed when ready:
+       <iframe width="100%" height="100%" src="https://www.youtube.com/embed/YOUR_ID"
+         frameborder="0" allowfullscreen></iframe>
+    */
+
+    /* ── HOW IT WORKS ──────────────────────────────── */
+    #how-it-works { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 56px;
+    }
+    .step-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .step-card:hover { border-color: var(--amber); }
+    .step-card img {
+      width: 100%;
+      display: block;
+    }
+    .step-body { padding: 20px 22px 24px; }
+    .step-number {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--amber);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .step-card h3 {
+      font-family: Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .step-card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── DIFFERENTIATORS ───────────────────────────── */
+    #why {  }
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      margin-top: 56px;
+    }
+    .why-card {
+      padding: 28px 24px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    .why-icon {
+      width: 44px; height: 44px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      margin-bottom: 18px;
+    }
+    .why-card h3 {
+      font-family: Georgia, serif;
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .why-card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .time-badge {
+      display: inline-block;
+      margin-top: 12px;
+      background: rgba(224,124,36,0.12);
+      border: 1px solid rgba(224,124,36,0.3);
+      color: var(--amber);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 3px;
+    }
+
+    /* ── GHOST JOB ─────────────────────────────────── */
+    #ghost {
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+      min-height: 420px;
+      display: flex;
+      align-items: center;
+    }
+    .ghost-bg {
+      position: absolute; inset: 0;
+      background: url('assets/images/ghost_job_buster.png') center/cover no-repeat;
+      filter: brightness(0.3);
+    }
+    .ghost-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(12,12,12,0.9) 40%, rgba(12,12,12,0.1) 100%);
+    }
+    .ghost-content {
+      position: relative; z-index: 2;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 40px;
+      max-width: 560px;
+      margin-left: 40px;
+    }
+    @media (min-width: 800px) {
+      .ghost-content { margin-left: calc((100vw - 1100px) / 2 + 40px); }
+    }
+    .ghost-content h2 { margin-bottom: 16px; }
+    .ghost-content p { color: var(--muted); font-size: 16px; margin-bottom: 24px; }
+    .ghost-statuses {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .ghost-status {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 15px;
+    }
+    .status-dot {
+      width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+    }
+    .dot-green { background: var(--green); }
+    .dot-warn  { background: var(--warn); }
+    .dot-grey  { background: var(--grey); }
+
+    /* ── WHO IT'S FOR ──────────────────────────────── */
+    #who { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .personas {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+      margin-top: 56px;
+    }
+    .persona-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .persona-photo {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+      filter: grayscale(20%);
+    }
+    .persona-body { padding: 24px; }
+    .persona-body h3 {
+      font-family: Georgia, serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .persona-role {
+      font-size: 13px;
+      color: var(--amber);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .persona-body ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .persona-body li {
+      font-size: 14px;
+      color: var(--muted);
+      padding-left: 16px;
+      position: relative;
+    }
+    .persona-body li::before {
+      content: '—';
+      position: absolute; left: 0;
+      color: var(--border);
+    }
+
+    /* ── WORKSHOP ──────────────────────────────────── */
+    #workshop { }
+    .workshop-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      margin-top: 56px;
+      align-items: start;
+    }
+    @media (max-width: 760px) { .workshop-grid { grid-template-columns: 1fr; } }
+    .workshop-details h3 {
+      font-family: Georgia, serif;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    .workshop-includes {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .workshop-includes li {
+      display: flex;
+      gap: 12px;
+      font-size: 15px;
+      color: var(--muted);
+    }
+    .check {
+      color: var(--amber);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .workshop-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 36px 32px;
+      text-align: center;
+    }
+    .price-tag {
+      font-family: Georgia, serif;
+      font-size: 60px;
+      font-weight: 700;
+      color: var(--amber);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .price-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+    .workshop-card .btn-primary {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .workshop-note {
+      font-size: 13px;
+      color: var(--grey);
+      line-height: 1.5;
+    }
+    .agenda-list {
+      margin-top: 28px;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+    .agenda-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .agenda-item:last-child { border-bottom: none; }
+    .agenda-item span:last-child { color: var(--muted); font-size: 13px; }
+
+    /* ── OPEN SOURCE ───────────────────────────────── */
+    #open-source {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    #open-source .lead { margin: 0 auto 40px; }
+    .oss-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* ── FOOTER ────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-brand {
+      font-family: Georgia, serif;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .footer-brand span { color: var(--amber); }
+    footer p {
+      font-size: 13px;
+      color: var(--grey);
+      max-width: 540px;
+      line-height: 1.6;
+    }
+
+    /* ── RESPONSIVE ────────────────────────────────── */
+    @media (max-width: 640px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      section { padding: 72px 20px; }
+      .hero-content { padding: 120px 20px 80px; }
+      .ghost-content { margin-left: 20px; padding: 60px 20px; }
+      footer { padding: 32px 20px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-brand">Fit<span>Foundry</span></div>
+    <div class="nav-links">
+      <a href="#how-it-works">How It Works</a>
+      <a href="#ghost">Ghost Check</a>
+      <a href="#who">Who It's For</a>
+      <a href="#workshop" class="nav-cta">Attend a Workshop</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-tag">Open Source · Agentic Job Search</div>
+      <h1>FitFoundry</h1>
+      <div class="hero-tagline">Forged Fit.</div>
+      <p class="hero-sub">
+        Answer three questions. Step back.<br>
+        The agent reads every listing, scores each one against your profile,
+        and hands you only the roles worth your time.
+      </p>
+      <div class="btn-group">
+        <a href="#workshop" class="btn-primary">Attend a Workshop — $99</a>
+        <a href="https://github.com/ecodad/fitfoundry" target="_blank" rel="noopener" class="btn-secondary">View on GitHub →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM / STATS -->
+  <section id="problem">
+    <div class="container">
+      <div class="section-label">The Problem</div>
+      <h2>Manual job searching is a second job.</h2>
+      <p class="lead">Reading 50–150 listings per board at 3–5 minutes each adds up before a single application is submitted. FitFoundry handles the triage — you review what already fits.</p>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">11</div>
+          <div class="stat-label">hours spent searching<br>per week, on average</div>
+          <div class="stat-sub">ConsumerAffairs 2026</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">31<span style="font-size:0.45em;color:var(--muted);">min</span></div>
+          <div class="stat-label">per application<br>form completed</div>
+          <div class="stat-sub">Zety</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">294</div>
+          <div class="stat-label">applications to<br>land one offer</div>
+          <div class="stat-sub">scale.jobs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" style="color:var(--green);">20<span style="font-size:0.45em;color:var(--muted);">–40m</span></div>
+          <div class="stat-label">for one FitFoundry<br>board run, unattended</div>
+          <div class="stat-sub">vs. 2–8 hrs manually</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO VIDEO -->
+  <section id="demo">
+    <div class="container">
+      <div class="section-label">See It In Action</div>
+      <h2>Watch a full run — start to scored output.</h2>
+      <p class="lead">One board. Three questions. Then the agent takes over — navigating, extracting, scoring, ghost-checking, and writing output files while you do something else.</p>
+      <div class="video-wrapper">
+        <!-- Replace this placeholder with your embed when the video is ready:
+             <iframe width="100%" height="100%"
+               src="https://www.youtube.com/embed/YOUR_VIDEO_ID?rel=0"
+               frameborder="0" allow="accelerometer; autoplay; clipboard-write;
+               encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+             </iframe>
+        -->
+        <div class="video-placeholder">
+          <div class="play-icon"></div>
+          <p><strong>Demo video coming soon.</strong><br>
+          A complete run: Indeed search → scored output files in under 40 minutes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works">
+    <div class="container">
+      <div class="section-label">How It Works</div>
+      <h2>Five steps. No keyboard after the first three questions.</h2>
+      <p class="lead">FitFoundry is agentic — it navigates, reads, scores, and writes output files on its own. You configure your profile once and point it at a board.</p>
+      <div class="steps-grid">
+        <div class="step-card">
+          <img src="assets/images/select_job_board (Small).png" alt="Select a job board" />
+          <div class="step-body">
+            <div class="step-number">Step 0</div>
+            <h3>Choose Your Board</h3>
+            <p>Tell the agent which board or company to search, how far back to look, and your location. That's it. The agent takes over.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <img src="assets/images/filter_extract (Small).png" alt="Filter and extract listings" />
+          <div class="step-body">
+            <div class="step-number">Step 1</div>
+            <h3>Filter &amp; Extract</h3>
+            <p>The agent navigates the board, scrolls through pages, and extracts every matching job description — titles, companies, locations, and full text.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <img src="assets/images/master_list (Small).png" alt="Build the master list" />
+          <div class="step-body">
+            <div class="step-number">Step 2</div>
+            <h3>Build the Master List</h3>
+            <p>All listings are compiled into a single markdown table. Every job found, with fit score, title, company, and ghost check status.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <img src="assets/images/score_each (Small).png" alt="Score each listing" />
+          <div class="step-body">
+            <div class="step-number">Step 3</div>
+            <h3>Score Against Your Profile</h3>
+            <p>Each job description is read against your profile. The agent assigns a fit score and an interest score — with reasoning for both. Roles scoring below 6 are noted but not acted on.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <img src="assets/images/ghost_job_check (Small).png" alt="Ghost job check" />
+          <div class="step-body">
+            <div class="step-number">Step 4.5</div>
+            <h3>Ghost Job Check</h3>
+            <p>Before creating output files, FitFoundry verifies the posting is still live on the company's own ATS — Workday, Greenhouse, or Lever — not just on the job board.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <img src="assets/images/create__job_files (Small).png" alt="Create individual job files" />
+          <div class="step-body">
+            <div class="step-number">Step 4</div>
+            <h3>Create Job Files</h3>
+            <p>One markdown file per high-scoring job. Each file contains the full JD, your fit/interest scores with reasoning, gap analysis, and an ATS link. Ready for cover letters and interview prep.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <img src="assets/images/report (Small).png" alt="Final report" />
+          <div class="step-body">
+            <div class="step-number">Step 5</div>
+            <h3>Session Report</h3>
+            <p>A summary is appended to your master list: how many listings found, how many scored ≥6, run time, and the files created. Your search record stays organized across sessions.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY FITFOUNDRY -->
+  <section id="why">
+    <div class="container">
+      <div class="section-label">Why FitFoundry</div>
+      <h2>Not a keyword match. Not a spray-and-pray tool.</h2>
+      <p class="lead">FitFoundry is built on four principles that separate it from job board algorithms and AI resume optimizers.</p>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon">⚖️</div>
+          <h3>Profile-Based Scoring</h3>
+          <p>Every listing is scored against your career narrative, salary floor, hard constraints, and target seniority — not keywords. A 7/10 means something specific to you.</p>
+          <span class="time-badge">You review only jobs scoring ≥6</span>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">🔁</div>
+          <h3>Consistent Calibration</h3>
+          <p>The same profile is applied across every board, every session. You're not relying on a different algorithm each time — your standards travel with you.</p>
+          <span class="time-badge">&gt;5 hrs saved per week</span>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">📁</div>
+          <h3>Structured Output Files</h3>
+          <p>Each high-scoring job produces a standalone markdown file with the full JD, gap analysis, and an ATS link. Feed it back to Cowork for a tailored cover letter in minutes.</p>
+          <span class="time-badge">20–40 min per board, unattended</span>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">👻</div>
+          <h3>Ghost Job Detection</h3>
+          <p>FitFoundry checks each posting against the company's own career site before creating output files. Stop writing cover letters for jobs that were filled last month.</p>
+          <span class="time-badge">Workday · Greenhouse · Lever</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GHOST JOB BUSTER -->
+  <section id="ghost">
+    <div class="ghost-bg"></div>
+    <div class="ghost-overlay"></div>
+    <div class="ghost-content">
+      <div class="section-label">Ghost Job Check</div>
+      <h2>Before you write a single word of a cover letter.</h2>
+      <p>Job boards regularly display postings that have been filled, closed, or were never real. FitFoundry verifies each high-scoring job against the company's own ATS — not just the board listing.</p>
+      <div class="ghost-statuses">
+        <div class="ghost-status">
+          <div class="status-dot dot-green"></div>
+          <span><strong>Confirmed</strong> — Found live on the company's own career site</span>
+        </div>
+        <div class="ghost-status">
+          <div class="status-dot dot-warn"></div>
+          <span><strong>Possible Ghost</strong> — Not found; may be filled, unpublished, or never real</span>
+        </div>
+        <div class="ghost-status">
+          <div class="status-dot dot-grey"></div>
+          <span><strong>Unverified</strong> — Site blocked (e.g. Cloudflare); cannot confirm either way</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHO IT'S FOR -->
+  <section id="who">
+    <div class="container">
+      <div class="section-label">Who It's For</div>
+      <h2>Anyone searching for a better-fitting role.</h2>
+      <p class="lead">FitFoundry works for any professional who can complete the setup. You don't need to be a developer — if you can follow a setup guide and fill out a profile, the agent handles the rest.</p>
+      <div class="personas">
+        <div class="persona-card">
+          <img class="persona-photo" src="assets/images/Marcus_Webb (Small).png" alt="Marcus Webb" />
+          <div class="persona-body">
+            <h3>Marcus Webb</h3>
+            <div class="persona-role">Full-Stack Developer · Seattle</div>
+            <ul>
+              <li>5 years React / Node.js / TypeScript</li>
+              <li>Avoiding DevOps and Java/C# roles</li>
+              <li>Salary floor: $110K, hybrid or remote</li>
+              <li>Runs 3 boards weekly, reviews only ≥7 scores</li>
+            </ul>
+          </div>
+        </div>
+        <div class="persona-card">
+          <img class="persona-photo" src="assets/images/Sandra_Vigil (Small).png" alt="Sandra Vigil" />
+          <div class="persona-body">
+            <h3>Sandra Vigil</h3>
+            <div class="persona-role">Senior Oncology RN · Albuquerque</div>
+            <ul>
+              <li>14 years oncology &amp; hematology nursing</li>
+              <li>Targeting Senior RN and Infusion RN roles</li>
+              <li>Bilingual English/Spanish, local only, $75K floor</li>
+              <li>Filters out administrative and travel nursing roles</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKSHOP -->
+  <section id="workshop">
+    <div class="container">
+      <div class="section-label">The Workshop</div>
+      <h2>Set up, calibrate, and run your first search in one session.</h2>
+      <div class="workshop-grid">
+        <div class="workshop-details">
+          <h3>What's included</h3>
+          <ul class="workshop-includes">
+            <li><span class="check">✓</span><span>Pre-session setup guide and support — arrive with software installed and questions answered</span></li>
+            <li><span class="check">✓</span><span>2-hour live, instructor-led session with hands-on profile building and a full live demo</span></li>
+            <li><span class="check">✓</span><span>Your profile files drafted by AI and reviewed with instructor feedback during the session</span></li>
+            <li><span class="check">✓</span><span>Board-specific guidance for Indeed, Dice, LinkedIn, and a dozen others</span></li>
+            <li><span class="check">✓</span><span>Terms of Service briefing — understand where the risk is before you run anything</span></li>
+            <li><span class="check">✓</span><span>Post-session troubleshooting — reach out directly with any setup issues after the session</span></li>
+          </ul>
+          <div class="agenda-list">
+            <div class="agenda-item"><span>What FitFoundry is and why it works</span><span>15 min</span></div>
+            <div class="agenda-item"><span>Setup verification &amp; profile build</span><span>25 min</span></div>
+            <div class="agenda-item"><span>Live demo — one complete run</span><span>35 min</span></div>
+            <div class="agenda-item"><span>Board-specific notes</span><span>15 min</span></div>
+            <div class="agenda-item"><span>Terms of Service</span><span>5 min</span></div>
+            <div class="agenda-item"><span>Keeping it running + Q&amp;A</span><span>20 min</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="workshop-card">
+            <div class="price-tag">$99</div>
+            <div class="price-sub">per seat · one-time</div>
+            <a href="https://lu.ma/fitfoundry" target="_blank" rel="noopener" class="btn-primary">
+              Register on Luma →
+            </a>
+            <p class="workshop-note">
+              Requires a Claude Pro subscription ($20/mo).<br>
+              Setup guide sent upon registration.<br>
+              Seats are limited per session.
+            </p>
+          </div>
+          <div style="margin-top:20px; padding:20px 24px; border:1px solid var(--border); border-radius:8px; background:var(--surface);">
+            <div class="section-label" style="margin-bottom:10px;">Free intro webinar</div>
+            <p style="font-size:14px; color:var(--muted); line-height:1.6; margin-bottom:14px;">
+              Not sure if FitFoundry is right for you? Join a free 30-minute overview — live demo included, no setup required.
+            </p>
+            <a href="https://lu.ma/fitfoundry" target="_blank" rel="noopener" class="btn-secondary" style="font-size:14px; padding:10px 20px;">
+              See upcoming dates →
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OPEN SOURCE -->
+  <section id="open-source">
+    <div class="container">
+      <div class="section-label">Open Source</div>
+      <h2>Built in the open. Free to fork.</h2>
+      <p class="lead">FitFoundry is MIT licensed and available on GitHub. The workshop gets you set up fast — but everything you need to run it yourself is in the repository.</p>
+      <div class="oss-links">
+        <a href="https://github.com/ecodad/fitfoundry" target="_blank" rel="noopener" class="btn-primary">View on GitHub →</a>
+        <a href="https://github.com/ecodad/fitfoundry/issues" target="_blank" rel="noopener" class="btn-secondary">Report an Issue</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-brand">Fit<span>Foundry</span> &mdash; Forged Fit.</div>
+    <p>FitFoundry is an open-source project. Use of any job board through this tool is subject to that board's terms of service. You are responsible for compliance. The MIT license includes an explicit ToS disclaimer.</p>
+  </footer>
+
+</body>
+</html>
