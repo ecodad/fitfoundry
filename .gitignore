@@ -23,3 +23,8 @@ workshop/
 
 # Resume & Cover Letter Source
 resumes/
+
+# extra files for doc/ management
+*.pptx
+*.tmp
+temp/
