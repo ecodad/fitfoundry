@@ -2,6 +2,8 @@
 
 An AI-assisted job search system designed to run inside [Cowork](https://www.anthropic.com) (Anthropic's agentic desktop tool). FitFoundry automates the repetitive parts of a job search across three stages: building a career profile, scraping and scoring job boards, and generating tailored application materials.
 
+**Website & workshops:** [ecodad.github.io/fitfoundry](https://ecodad.github.io/fitfoundry) — live demos, upcoming workshop dates, and registration.
+
 ---
 
 ## Getting Started
