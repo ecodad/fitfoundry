@@ -66,6 +66,10 @@ are safe to overwrite directly. See `DELTA-APPLY-CORE.md` for instructions.
 - New Maintenance Workflows section added with triggers for Cleanup and Confusion Matrix.
 - Output Format section updated to document the new subfolder structure and Status field.
 
+> **Existing users:** `SKILL.md` is read from the installed skill bundle, not the workspace.
+> These changes only take effect after reinstalling the `.skill` file in Claude Desktop.
+> This is optional — all other files in this delta apply immediately without a reinstall.
+
 ---
 
 ## New Files

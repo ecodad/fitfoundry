@@ -36,6 +36,8 @@ For each file listed under **Updated Files** in `CHANGES.md`:
 
 Example: if `FITFOUNDRY-WORKFLOW.md` is listed as updated, copy `deltas/core/2026-04-04/FITFOUNDRY-WORKFLOW.md` into `skill/FITFOUNDRY-WORKFLOW.md`.
 
+**Note on `SKILL.md`:** This file is read from the installed skill bundle by Claude Desktop, not from your workspace. Copying it to your `skill/` directory has no effect on a running installation. Changes in `SKILL.md` — such as the weekly Confusion Matrix reminder — only take effect after reinstalling the `.skill` file via Claude Desktop (Customize → Skills → remove → re-upload). This step is optional for existing users; the core workflow changes in all other files apply immediately without a reinstall.
+
 ---
 
 ## Step 2 — Add New Files
