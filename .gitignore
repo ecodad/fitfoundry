@@ -24,6 +24,10 @@ workshop/
 # Resume & Cover Letter Source
 resumes/
 
+# Personal project library — real project cards with employer names, metrics, program details
+# The boilerplate skill/project-library/ template is committed; your filled cards are not
+my-projects/
+
 # extra files for doc/ management
 *.pptx
 *.tmp
